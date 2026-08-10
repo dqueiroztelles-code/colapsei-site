@@ -1,4 +1,5 @@
--- Colapsei. E Agora? · Mapa do Colapso · schema mínimo
+-- Colapsei. E Agora? · Mapa do Colapso · schema mínimo V1.3.1
+-- Dados estruturados apenas. O texto completo do resultado não é persistido.
 create extension if not exists pgcrypto;
 
 create table if not exists public.contacts (
@@ -16,12 +17,12 @@ create table if not exists public.map_sessions (
   id uuid primary key default gen_random_uuid(),
   contact_id uuid not null references public.contacts(id) on delete cascade,
   map_version text not null,
+  privacy_version text not null,
   route text not null check (route in ('collapsei','cresci','alguem','sistema','reconstruir')),
   answer_1 text not null,
   answer_2 text not null,
   answer_3 text not null,
   result_title text not null,
-  result_snapshot jsonb not null,
   utm_source text,
   utm_medium text,
   utm_campaign text,
@@ -39,4 +40,5 @@ create index if not exists map_sessions_created_idx on public.map_sessions(creat
 alter table public.contacts enable row level security;
 alter table public.map_sessions enable row level security;
 
--- Nenhuma policy para anon/authenticated: leitura e escrita passam apenas pela função server-side usando service_role.
+-- Sem policies para anon/authenticated: o navegador não acessa as tabelas diretamente.
+-- Escrita e leitura operacionais passam somente pela Vercel Function com service_role.

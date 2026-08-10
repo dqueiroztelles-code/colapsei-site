@@ -29,8 +29,9 @@ module.exports = async function handler(req,res){
     const name = clean(body.name,MAX.name);
     const email = clean(body.email,MAX.email).toLowerCase();
     const route = clean(body.route,40);
+    const privacyVersion = clean(body.privacy_version,80);
     const answers = [clean(body.answer_1,MAX.answer),clean(body.answer_2,MAX.answer),clean(body.answer_3,MAX.answer)];
-    if(!name || !validEmail(email) || !ROUTES.has(route) || answers.some(a=>!a) || body.privacy_ack !== true){
+    if(!name || !validEmail(email) || !ROUTES.has(route) || !privacyVersion || answers.some(a=>!a) || body.privacy_ack !== true){
       return res.status(400).json({error:'Dados obrigatórios inválidos.'});
     }
     const result = snapshot(body.result_snapshot);
@@ -38,22 +39,46 @@ module.exports = async function handler(req,res){
 
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if(!supabaseUrl || !serviceKey) return res.status(503).json({error:'Banco ainda não configurado neste ambiente.',saved:false,email_sent:false});
+    if(!supabaseUrl || !serviceKey){
+      return res.status(503).json({error:'Banco ainda não configurado neste ambiente.',saved:false,email_sent:false});
+    }
     const dbHeaders = {'Content-Type':'application/json','apikey':serviceKey,'Authorization':`Bearer ${serviceKey}`};
+    const now = new Date().toISOString();
 
-    const contactResp = await fetch(`${supabaseUrl}/rest/v1/contacts?on_conflict=email`,{
-      method:'POST',headers:{...dbHeaders,'Prefer':'resolution=merge-duplicates,return=representation'},
-      body:JSON.stringify({name,email,marketing_consent:!!body.marketing_consent,marketing_consented_at:body.marketing_consent?new Date().toISOString():null,privacy_ack_at:new Date().toISOString(),updated_at:new Date().toISOString()})
+    // Reutiliza o contato pelo e-mail. Um checkbox de marketing desmarcado não apaga consentimento anterior.
+    const lookupResp = await fetch(`${supabaseUrl}/rest/v1/contacts?email=eq.${encodeURIComponent(email)}&select=id,marketing_consent&limit=1`,{
+      method:'GET',headers:{...dbHeaders,'Accept':'application/json'}
     });
-    if(!contactResp.ok) throw new Error(`Falha ao salvar contato (${contactResp.status}).`);
-    const contacts = await contactResp.json();
-    const contact = contacts[0];
-    if(!contact?.id) throw new Error('Contato não retornou ID.');
+    if(!lookupResp.ok) throw new Error(`Falha ao consultar contato (${lookupResp.status}).`);
+    const existing = (await lookupResp.json())[0] || null;
+    let contactId;
 
+    if(existing?.id){
+      const update = {name,privacy_ack_at:now,updated_at:now};
+      if(body.marketing_consent === true){
+        update.marketing_consent = true;
+        if(!existing.marketing_consent) update.marketing_consented_at = now;
+      }
+      const contactResp = await fetch(`${supabaseUrl}/rest/v1/contacts?id=eq.${encodeURIComponent(existing.id)}`,{
+        method:'PATCH',headers:{...dbHeaders,'Prefer':'return=minimal'},body:JSON.stringify(update)
+      });
+      if(!contactResp.ok) throw new Error(`Falha ao atualizar contato (${contactResp.status}).`);
+      contactId = existing.id;
+    }else{
+      const contactResp = await fetch(`${supabaseUrl}/rest/v1/contacts`,{
+        method:'POST',headers:{...dbHeaders,'Prefer':'return=representation'},
+        body:JSON.stringify({name,email,marketing_consent:body.marketing_consent===true,marketing_consented_at:body.marketing_consent===true?now:null,privacy_ack_at:now,updated_at:now})
+      });
+      if(!contactResp.ok) throw new Error(`Falha ao salvar contato (${contactResp.status}).`);
+      const contact = (await contactResp.json())[0];
+      contactId = contact?.id;
+      if(!contactId) throw new Error('Contato não retornou ID.');
+    }
+
+    // Minimizamos persistência: não gravamos o texto completo do resultado, apenas categorias/IDs estruturados.
     const session = {
-      contact_id:contact.id,map_version:clean(body.map_version,80),route,
-      answer_1:answers[0],answer_2:answers[1],answer_3:answers[2],
-      result_title:result.title,result_snapshot:result,
+      contact_id:contactId,map_version:clean(body.map_version,80),privacy_version:privacyVersion,route,
+      answer_1:answers[0],answer_2:answers[1],answer_3:answers[2],result_title:result.title,
       utm_source:clean(body.utm_source,160),utm_medium:clean(body.utm_medium,160),utm_campaign:clean(body.utm_campaign,160),
       referrer:clean(body.source,MAX.url),page_url:clean(body.page_url,MAX.url),email_status:'pending'
     };
@@ -61,26 +86,34 @@ module.exports = async function handler(req,res){
       method:'POST',headers:{...dbHeaders,'Prefer':'return=representation'},body:JSON.stringify(session)
     });
     if(!sessionResp.ok) throw new Error(`Falha ao salvar sessão (${sessionResp.status}).`);
-    const sessions=await sessionResp.json();
-    const sessionId=sessions[0]?.id;
+    const sessionId=(await sessionResp.json())[0]?.id;
 
     let emailSent=false;
     const resendKey=process.env.RESEND_API_KEY;
     const from=process.env.MAPA_FROM_EMAIL;
-    const siteUrl=process.env.MAPA_SITE_URL || 'https://colapsei-site.vercel.app/mapa';
-    const contactUrl=process.env.DULCE_CONTACT_URL || 'https://colapsei-site.vercel.app/#contato';
+    const proto=clean(req.headers['x-forwarded-proto'] || 'https',20);
+    const host=clean(req.headers.host || '',255);
+    const origin=host?`${proto}://${host}`:'https://colapsei-site.vercel.app';
+    const siteUrl=process.env.MAPA_SITE_URL || `${origin}/mapa`;
+    const contactUrl=process.env.DULCE_CONTACT_URL || `${origin}/?origem=mapa&rota=${encodeURIComponent(route)}#contato`;
+
     if(resendKey && from){
+      const mailPayload={from,to:[email],subject:'Seu Mapa está pronto.',html:emailHtml({name,result,siteUrl,contactUrl})};
+      if(process.env.MAPA_REPLY_TO) mailPayload.reply_to=process.env.MAPA_REPLY_TO;
       const mailResp=await fetch('https://api.resend.com/emails',{
-        method:'POST',headers:{'Authorization':`Bearer ${resendKey}`,'Content-Type':'application/json'},
-        body:JSON.stringify({from,to:[email],subject:'Seu Mapa está pronto.',html:emailHtml({name,result,siteUrl,contactUrl}),reply_to:process.env.MAPA_REPLY_TO || undefined})
+        method:'POST',headers:{'Authorization':`Bearer ${resendKey}`,'Content-Type':'application/json'},body:JSON.stringify(mailPayload)
       });
       emailSent=mailResp.ok;
-      if(sessionId){
-        await fetch(`${supabaseUrl}/rest/v1/map_sessions?id=eq.${encodeURIComponent(sessionId)}`,{
-          method:'PATCH',headers:{...dbHeaders,'Prefer':'return=minimal'},body:JSON.stringify({email_status:emailSent?'sent':'failed',email_sent_at:emailSent?new Date().toISOString():null})
-        });
-      }
+      if(!mailResp.ok) console.error('mapa_email_error',mailResp.status,await mailResp.text().catch(()=>''));
     }
+
+    if(sessionId){
+      await fetch(`${supabaseUrl}/rest/v1/map_sessions?id=eq.${encodeURIComponent(sessionId)}`,{
+        method:'PATCH',headers:{...dbHeaders,'Prefer':'return=minimal'},
+        body:JSON.stringify({email_status:emailSent?'sent':(resendKey&&from?'failed':'pending'),email_sent_at:emailSent?new Date().toISOString():null})
+      });
+    }
+
     return res.status(200).json({saved:true,email_sent:emailSent,session_id:sessionId||null});
   }catch(error){
     console.error('mapa_submit_error',error);
