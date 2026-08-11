@@ -20,6 +20,11 @@ function snapshot(raw={}){
   const checklist = Array.isArray(raw.checklist) ? raw.checklist.slice(0,12).map(q=>clean(q,240)) : [];
   return {title:clean(raw.title,MAX.title),lead:clean(raw.lead,1000),summary:clean(raw.summary,1200),priorities,questions,checklist,orientation:clean(raw.orientation,1200),next_title:clean(raw.next_title,MAX.title)};
 }
+function whatsappContactUrl(route){
+  const routeLabel = ({collapsei:'Eu colapsei',cresci:'Cresci no colapso',alguem:'Alguém que amo colapsou',sistema:'Estou perdido no sistema',reconstruir:'Preciso reconstruir'})[route] || '';
+  const message = `Oi, Dulce. Acabei de fazer meu Mapa do Colapso.${routeLabel ? ` Minha rota foi: ${routeLabel}.` : ''} Quero organizar meus próximos passos.`;
+  return `https://wa.me/5511983095381?text=${encodeURIComponent(message)}`;
+}
 function emailHtml({name, result, siteUrl, contactUrl}){
   const first = escapeHtml(name.split(/\s+/)[0] || '');
   const priorities = result.priorities.map((p,i)=>`<tr><td style="padding:16px 0;border-top:1px solid #d9d0c2;vertical-align:top;width:38px;font:600 12px Arial,sans-serif;color:#0f6b4c">0${i+1}</td><td style="padding:16px 0;border-top:1px solid #d9d0c2"><div style="font:600 17px Arial,sans-serif;color:#17150f">${escapeHtml(p.title)}</div><div style="margin-top:6px;font:14px/1.55 Arial,sans-serif;color:#5d584f">${escapeHtml(p.body)}</div></td></tr>`).join('');
@@ -38,7 +43,7 @@ module.exports = async function handler(req,res){
     const route = clean(body.route,40);
     const privacyVersion = clean(body.privacy_version,80);
     const answers = [clean(body.answer_1,MAX.answer),clean(body.answer_2,MAX.answer),clean(body.answer_3,MAX.answer)];
-    if(!name || !validEmail(email) || !phone || !ROUTES.has(route) || !privacyVersion || answers.some(a=>!a) || body.privacy_ack !== true){
+    if(!name || !validEmail(email) || !phone || !ROUTES.has(route) || !privacyVersion || answers.some(a=>!a) || body.privacy_ack !== true || body.whatsapp_contact_consent !== true){
       return res.status(400).json({error:'Dados obrigatórios inválidos.'});
     }
     const result = snapshot(body.result_snapshot);
@@ -60,7 +65,7 @@ module.exports = async function handler(req,res){
     let contactId;
 
     if(existing?.id){
-      const update = {name,phone,privacy_ack_at:now,updated_at:now};
+      const update = {name,phone,privacy_ack_at:now,whatsapp_contact_consent:true,whatsapp_consented_at:now,updated_at:now};
       const contactResp = await fetch(`${supabaseUrl}/rest/v1/contacts?id=eq.${encodeURIComponent(existing.id)}`,{
         method:'PATCH',headers:{...dbHeaders,'Prefer':'return=minimal'},body:JSON.stringify(update)
       });
@@ -69,7 +74,7 @@ module.exports = async function handler(req,res){
     }else{
       const contactResp = await fetch(`${supabaseUrl}/rest/v1/contacts`,{
         method:'POST',headers:{...dbHeaders,'Prefer':'return=representation'},
-        body:JSON.stringify({name,email,phone,privacy_ack_at:now,updated_at:now})
+        body:JSON.stringify({name,email,phone,privacy_ack_at:now,whatsapp_contact_consent:true,whatsapp_consented_at:now,updated_at:now})
       });
       if(!contactResp.ok) throw new Error(`Falha ao salvar contato (${contactResp.status}).`);
       const contact = (await contactResp.json())[0];
@@ -96,7 +101,7 @@ module.exports = async function handler(req,res){
     const host=clean(req.headers.host || '',255);
     const origin=host?`${proto}://${host}`:'https://colapsei-site.vercel.app';
     const siteUrl=process.env.MAPA_SITE_URL || `${origin}/mapa`;
-    const contactUrl=process.env.DULCE_CONTACT_URL || `${origin}/?origem=mapa&rota=${encodeURIComponent(route)}#contato`;
+    const contactUrl=process.env.DULCE_CONTACT_URL || whatsappContactUrl(route);
 
     if(resendKey && from){
       const mailPayload={from,to:[email],subject:'Seu Mapa está pronto.',html:emailHtml({name,result,siteUrl,contactUrl})};
