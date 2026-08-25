@@ -1,0 +1,74 @@
+-- Colapsei. E Agora? · schema operacional de lançamento
+-- Execute no SQL Editor do Supabase. É seguro executar novamente.
+create extension if not exists pgcrypto;
+
+create table if not exists public.contacts (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null unique,
+  phone text,
+  privacy_ack_at timestamptz not null default now(),
+  whatsapp_contact_consent boolean not null default false,
+  whatsapp_consented_at timestamptz,
+  marketing_consent boolean not null default false,
+  marketing_consented_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.contacts add column if not exists phone text;
+alter table public.contacts add column if not exists whatsapp_contact_consent boolean not null default false;
+alter table public.contacts add column if not exists whatsapp_consented_at timestamptz;
+
+create table if not exists public.map_sessions (
+  id uuid primary key default gen_random_uuid(),
+  contact_id uuid not null references public.contacts(id) on delete cascade,
+  map_version text not null,
+  privacy_version text not null,
+  route text not null check (route in ('collapsei','cresci','alguem','sistema','reconstruir')),
+  answer_1 text not null,
+  answer_2 text not null,
+  answer_3 text not null,
+  result_title text not null,
+  utm_source text,
+  utm_medium text,
+  utm_campaign text,
+  referrer text,
+  page_url text,
+  email_status text not null default 'pending' check (email_status in ('pending','sent','failed')),
+  email_sent_at timestamptz,
+  owner_notification_status text not null default 'pending' check (owner_notification_status in ('pending','sent','failed','disabled')),
+  owner_notified_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+alter table public.map_sessions add column if not exists owner_notification_status text not null default 'pending';
+alter table public.map_sessions add column if not exists owner_notified_at timestamptz;
+
+create table if not exists public.book_orders (
+  id uuid primary key default gen_random_uuid(),
+  stripe_session_id text not null unique,
+  stripe_payment_intent_id text,
+  customer_email text,
+  amount_total integer,
+  currency text,
+  payment_status text not null,
+  fulfillment_status text not null default 'pending' check (fulfillment_status in ('pending','fulfilled','failed')),
+  email_status text not null default 'pending' check (email_status in ('pending','sent','failed')),
+  email_sent_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists map_sessions_contact_idx on public.map_sessions(contact_id);
+create index if not exists map_sessions_route_idx on public.map_sessions(route);
+create index if not exists map_sessions_created_idx on public.map_sessions(created_at desc);
+create index if not exists book_orders_created_idx on public.book_orders(created_at desc);
+create index if not exists book_orders_email_idx on public.book_orders(customer_email);
+
+alter table public.contacts enable row level security;
+alter table public.map_sessions enable row level security;
+alter table public.book_orders enable row level security;
+
+-- Sem policies para anon/authenticated: o navegador não acessa as tabelas.
+-- Toda operação passa por funções servidoras com a service_role.
