@@ -101,12 +101,28 @@ module.exports = async function handler(req, res) {
     const answers = [clean(body.answer_1, MAX.answer), clean(body.answer_2, MAX.answer), clean(body.answer_3, MAX.answer)];
 
     if (body.website) return res.status(200).json({ saved: true, email_sent: false, owner_notified: false });
-    if (!name || !validEmail(email) || !phone || !ROUTES.has(route) || !privacyVersion || answers.some((answer) => !answer) || body.privacy_ack !== true || body.whatsapp_contact_consent !== true) {
-      return res.status(400).json({ error: 'Dados obrigatórios inválidos.' });
+
+    const invalidFields = [
+      !name && 'name',
+      !validEmail(email) && 'email',
+      !phone && 'phone',
+      !ROUTES.has(route) && 'route',
+      !privacyVersion && 'privacy_version',
+      answers.some((answer) => !answer) && 'answers',
+      body.privacy_ack !== true && 'privacy_ack',
+      body.whatsapp_contact_consent !== true && 'whatsapp_contact_consent'
+    ].filter(Boolean);
+
+    if (invalidFields.length) {
+      console.warn('mapa_validation_error', invalidFields.join(','));
+      return res.status(400).json({ error: 'Confira os dados informados.', fields: invalidFields });
     }
 
     const result = snapshot(body.result_snapshot);
-    if (!result.title || result.priorities.length !== 3) return res.status(400).json({ error: 'Resultado incompleto.' });
+    if (!result.title || result.priorities.length !== 3) {
+      console.warn('mapa_validation_error', 'result_snapshot');
+      return res.status(400).json({ error: 'Resultado incompleto.', fields: ['result_snapshot'] });
+    }
 
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;

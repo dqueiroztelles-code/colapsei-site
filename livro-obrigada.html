@@ -24,7 +24,7 @@
 <div>
 <div class="kicker">BURNOUTEI, E AGORA? · DULCE TELLES</div>
 <h1 id="pageTitle">Estamos confirmando seu pagamento.</h1>
-<p class="lead" id="pageLead">Isso costuma levar poucos segundos. Assim que a Stripe confirmar a compra, seu download será liberado aqui.</p>
+<p class="lead" id="pageLead">A confirmação pode levar alguns segundos. As instruções de acesso também são enviadas para o e-mail informado na compra.</p>
 <div aria-live="polite" class="state" id="purchaseState" role="status"><strong>Confirmação em andamento</strong><p>Não feche esta página ainda. Se o pagamento ainda estiver sendo processado, aguarde a confirmação.</p></div>
 <div class="actions"><a class="button primary" hidden id="downloadButton" href="#">Baixar meu livro →</a><a class="button" href="/livro">Voltar ao site</a></div>
 <p class="support" id="supportText">Se precisar de ajuda, <a href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Preciso%20de%20ajuda%20com%20o%20download%20do%20livro%20%22Burnoutei%2C%20e%20agora%3F%22" rel="noopener" target="_blank">fale com a Dulce pelo WhatsApp</a>.</p>
@@ -62,7 +62,7 @@ async function checkPayment(){
       download.href=data.download_url;download.hidden=false;trackPurchase();return;
     }
     if(response.status===202&&attempts<9){
-      state.innerHTML=`<strong>Confirmação em andamento</strong><p>Tentativa ${attempts} de 9. Aguardando a confirmação da Stripe.</p>`;
+      state.innerHTML=`<strong>Confirmação em andamento</strong><p>Tentativa ${attempts} de 9. Aguardando a confirmação da plataforma de pagamento.</p>`;
       setTimeout(checkPayment,2500);return;
     }
     fail(data.message||data.error||'O pagamento ainda não foi confirmado.');

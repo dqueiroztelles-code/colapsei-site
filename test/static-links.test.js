@@ -48,3 +48,18 @@ test('todos os links internos apontam para páginas ou arquivos existentes', () 
 
   assert.deepEqual(missing, []);
 });
+
+test('checkout do livro abre nova aba no desktop e mantém navegação no celular', () => {
+  const htmlFiles = filesIn(root).filter((file) => file.endsWith('.html'));
+  const checkoutFiles = htmlFiles.filter((file) => fs.readFileSync(file, 'utf8').includes('id="bookBuyButton"'));
+
+  assert.ok(checkoutFiles.length > 0);
+  for (const file of checkoutFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    assert.match(html, /desktopCheckout=window\.matchMedia\('\(min-width: 768px\)'\)\.matches/);
+    assert.match(html, /desktopCheckout\?window\.open\('about:blank','_blank'\):null/);
+    assert.match(html, /else\{\s*location\.href=data\.url;/);
+    assert.match(html, /Pagamento seguro pela Kiwify/);
+    assert.doesNotMatch(html, /Pagamento seguro (?:por cartão )?pela Stripe/);
+  }
+});

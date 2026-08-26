@@ -589,27 +589,47 @@ function renderResult(){
 }
 function restart(){state.route=null;state.qIndex=0;state.answers=[];state.lead=null;state.safety=null;$('#leadForm').reset();showScreen('routes');}
 function getUTM(){const p=new URLSearchParams(location.search);return {utm_source:p.get('utm_source')||'',utm_medium:p.get('utm_medium')||'',utm_campaign:p.get('utm_campaign')||''};}
+function validLeadEmail(value){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value||'').trim());}
+function validLeadPhone(value){const digits=String(value||'').replace(/\D/g,'');return /^\d{10,11}$/.test(digits)||/^55\d{10,11}$/.test(digits);}
+function validateLeadForm(){
+  const form=$('#leadForm'),email=$('#email'),phone=$('#phone');
+  email.setCustomValidity(validLeadEmail(email.value)?'':'Digite um e-mail completo, como nome@dominio.com.');
+  phone.setCustomValidity(validLeadPhone(phone.value)?'':'Digite um WhatsApp válido com DDD, como (11) 99999-9999.');
+  return form.reportValidity();
+}
 function leadPayload(){return {lead_id:(crypto.randomUUID?crypto.randomUUID():`map-${Date.now()}`),created_at:new Date().toISOString(),map_version:MAP_VERSION,name:$('#name').value.trim(),email:$('#email').value.trim(),phone:$('#phone').value.trim(),website:$('#website').value.trim(),route:state.route,answer_1:state.answers[0],answer_2:state.answers[1],answer_3:state.answers[2],result_destination:routeData[state.route].next.title,privacy_ack:true,whatsapp_contact_consent:true,privacy_version:'mapa-privacy-v1-2026-08',source:document.referrer||'direct',page_url:location.href,...getUTM(),result_snapshot:resultSnapshot()};}
 async function onLeadSubmit(e){
-  e.preventDefault();if(!$('#leadForm').reportValidity())return;
+  e.preventDefault();if(!validateLeadForm())return;
   const btn=$('#leadSubmit'),status=$('#leadStatus');
   btn.disabled=true;btn.textContent='Abrindo seu Mapa…';status.className='form-status';status.textContent='Salvando sua sessão e preparando seu Mapa.';
   state.lead=leadPayload();
+  let openResult=false;
   try{
     const response=await fetch('/api/mapa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state.lead)});
     const data=await response.json().catch(()=>({}));
-    if(!response.ok) throw new Error(data.error||'Não foi possível confirmar o envio.');
+    if(!response.ok){const error=new Error(data.error||'Não foi possível confirmar o envio.');error.status=response.status;error.fields=Array.isArray(data.fields)?data.fields:[];throw error;}
     state.lead.delivery=data;
     status.textContent='Pronto. Abrindo seu Mapa.';
+    openResult=true;
   }catch(error){
-    state.lead.delivery={saved:false,email_sent:false,error:String(error?.message||error)};
-    status.className='form-status error';status.textContent='Seu resultado será aberto normalmente. O envio por e-mail ainda não pôde ser confirmado.';
+    const editableFields=error?.status===400?error.fields.filter(field=>['name','email','phone'].includes(field)):[];
+    if(editableFields.length){
+      state.lead=null;
+      const messages={name:'Confira o seu nome.',email:'Confira o e-mail completo — por exemplo, nome@dominio.com.',phone:'Confira o WhatsApp com DDD — por exemplo, (11) 99999-9999.'};
+      status.className='form-status error';status.textContent=editableFields.map(field=>messages[field]).join(' ');
+      const first=$(`#${editableFields[0]}`);first?.focus({preventScroll:true});
+    }else{
+      state.lead.delivery={saved:false,email_sent:false,error:String(error?.message||error)};
+      status.className='form-status error';status.textContent='Seu resultado será aberto normalmente. O envio por e-mail ainda não pôde ser confirmado.';
+      openResult=true;
+    }
   }finally{
-    window.__lastLead=Object.freeze({...state.lead});
-    renderResult();btn.disabled=false;btn.textContent='Abrir meu Mapa →';
+    if(openResult){window.__lastLead=Object.freeze({...state.lead});renderResult();}
+    btn.disabled=false;btn.textContent='Abrir meu Mapa →';
   }
 }
 $('#startBtn').onclick=()=>{trackMap('mapa_started');showPanel('flowPanel');showScreen('routes');};$('#questionBack').onclick=goQuestionBack;$('#questionNext').onclick=goQuestionNext;$('#previewBack').onclick=()=>{state.qIndex=2;showScreen('question');renderQuestion();};$('#previewNext').onclick=renderCapture;$('#leadForm').addEventListener('submit',onLeadSubmit);$('#helpBtn').onclick=()=>openSafety(state.route ? (routeData[state.route]?.risk?.variant||'neutro') : 'neutro',currentOrigin());renderRoutes();
+$('#email').addEventListener('input',event=>event.currentTarget.setCustomValidity(''));$('#phone').addEventListener('input',event=>event.currentTarget.setCustomValidity(''));
 
 window.__MAP_STATE=state;window.__MAP_DATA=routeData;
 </script>
