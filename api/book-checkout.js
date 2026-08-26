@@ -6,6 +6,22 @@ const {
   deliveryConfiguration
 } = require('../lib/book');
 
+const DEFAULT_KIWIFY_CHECKOUT_URL = 'https://pay.kiwify.com.br/FMBFGL4';
+
+function externalCheckoutUrl() {
+  const provider = String(process.env.BOOK_CHECKOUT_PROVIDER || 'kiwify').trim().toLowerCase();
+  if (provider === 'stripe') return '';
+
+  const candidate = String(process.env.BOOK_EXTERNAL_CHECKOUT_URL || DEFAULT_KIWIFY_CHECKOUT_URL).trim();
+  try {
+    const url = new URL(candidate);
+    if (url.protocol !== 'https:' || url.hostname !== 'pay.kiwify.com.br') return '';
+    return url.toString();
+  } catch {
+    return '';
+  }
+}
+
 function randomIdentifier() {
   const alphabet = 'abcdefghijklmnopqrstuvwxyz';
   return Array.from(crypto.randomBytes(8), (value) => alphabet[value % alphabet.length]).join('');
@@ -16,6 +32,9 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método não permitido.' });
 
   try {
+    const externalUrl = externalCheckoutUrl();
+    if (externalUrl) return res.status(200).json({ url: externalUrl, provider: 'kiwify' });
+
     const configuration = deliveryConfiguration();
     const missing = Object.entries(configuration).filter(([, configured]) => !configured).map(([name]) => name);
     if (missing.length) {
@@ -63,3 +82,5 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Não foi possível abrir o checkout agora. Fale com a Dulce pelo WhatsApp.' });
   }
 };
+
+module.exports._test = { externalCheckoutUrl, DEFAULT_KIWIFY_CHECKOUT_URL };
