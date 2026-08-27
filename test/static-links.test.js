@@ -58,8 +58,35 @@ test('checkout do livro abre nova aba no desktop e mantém navegação no celula
     const html = fs.readFileSync(file, 'utf8');
     assert.match(html, /desktopCheckout=window\.matchMedia\('\(min-width: 768px\)'\)\.matches/);
     assert.match(html, /desktopCheckout\?window\.open\('about:blank','_blank'\):null/);
-    assert.match(html, /else\{\s*location\.href=data\.url;/);
-    assert.match(html, /Pagamento seguro pela Kiwify/);
+    assert.match(html, /else\{\s*location\.href=checkoutUrl\.toString\(\);/);
+    assert.match(html, /Pagamento seguro processado pela Kiwify/);
     assert.doesNotMatch(html, /Pagamento seguro (?:por cartão )?pela Stripe/);
   }
+});
+
+test('captação corporativa e do evento inclui e-mail, WhatsApp e consentimento', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert.match(html, /data-lead-type="corporate"/);
+  assert.match(html, /data-lead-type="event"/);
+  assert.equal((html.match(/name="phone"/g) || []).length, 2);
+  assert.equal((html.match(/name="consent"/g) || []).length, 2);
+  assert.match(html, /fetch\('\/api\/interest'/);
+});
+
+test('links de WhatsApp têm origem e mensagem contextual', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const links = [...html.matchAll(/<a\b[^>]*href="https:\/\/wa\.me\/5511983095381[^>]*>/g)].map((match) => match[0]);
+  assert.ok(links.length >= 12);
+  for (const link of links) {
+    assert.match(link, /data-wa-message=/);
+    assert.match(link, /data-wa-source=/);
+  }
+  assert.doesNotMatch(html, /consultoria personalizada/i);
+});
+
+test('instrumentação de experiência e campanha está presente', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert.match(html, /\/_vercel\/insights\/script\.js/);
+  assert.match(html, /\/_vercel\/speed-insights\/script\.js/);
+  assert.match(html, /checkoutUrl\.searchParams\.set\('src','site_livro'\)/);
 });
