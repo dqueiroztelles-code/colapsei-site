@@ -1,7 +1,7 @@
 const { enforceRateLimit } = require('../lib/lead-guard');
 
 const TYPES = new Set(['event', 'corporate']);
-const MAX = { name: 120, email: 254, phone: 24, company: 180, interest: 300, url: 1000 };
+const MAX = { name: 120, email: 254, phone: 24, company: 180, interest: 300, context: 3000, url: 1000 };
 
 function clean(value, max = 500) {
   return String(value ?? '').trim().slice(0, max);
@@ -30,7 +30,7 @@ function labels(type) {
     : { ownerSubject: 'Novo contato corporativo', visitorSubject: 'Recebemos seu interesse.', title: 'Soluções para empresas', origin: 'página Para Empresas' };
 }
 
-function ownerEmailHtml({ type, name, email, phone, company, interest, createdAt }) {
+function ownerEmailHtml({ type, name, email, phone, company, interest, context, createdAt }) {
   const copy = labels(type);
   const firstName = name.split(/\s+/)[0] || '';
   const phoneDigits = phone.replace(/\D/g, '');
@@ -40,7 +40,8 @@ function ownerEmailHtml({ type, name, email, phone, company, interest, createdAt
   const whatsappUrl = `https://wa.me/${phoneDigits}?text=${encodeURIComponent(message)}`;
   const optionalRows = [
     company ? `<tr><td style="padding:13px;border-bottom:1px solid #d9d0c2"><b>Empresa</b></td><td style="padding:13px;border-bottom:1px solid #d9d0c2">${escapeHtml(company)}</td></tr>` : '',
-    interest ? `<tr><td style="padding:13px;border-bottom:1px solid #d9d0c2"><b>Interesse</b></td><td style="padding:13px;border-bottom:1px solid #d9d0c2">${escapeHtml(interest)}</td></tr>` : ''
+    interest ? `<tr><td style="padding:13px;border-bottom:1px solid #d9d0c2"><b>Interesse</b></td><td style="padding:13px;border-bottom:1px solid #d9d0c2">${escapeHtml(interest)}</td></tr>` : '',
+    context ? `<tr><td style="padding:13px;border-bottom:1px solid #d9d0c2;vertical-align:top"><b>Contexto</b></td><td style="padding:13px;border-bottom:1px solid #d9d0c2;white-space:pre-line">${escapeHtml(context)}</td></tr>` : ''
   ].join('');
   return `<!doctype html><html lang="pt-BR"><body style="margin:0;background:#f7ecd8;color:#17150f"><div style="max-width:620px;margin:auto;padding:40px 24px;font-family:Arial,sans-serif"><div style="font:600 11px Arial,sans-serif;letter-spacing:.14em">NOVO CONTATO · ${escapeHtml(copy.title.toUpperCase())}</div><h1 style="font:500 36px/1.05 Georgia,serif;margin:24px 0">${escapeHtml(name)} enviou um interesse.</h1><table role="presentation" style="width:100%;border-collapse:collapse;background:#fff8ea"><tr><td style="padding:13px;border-bottom:1px solid #d9d0c2"><b>Origem</b></td><td style="padding:13px;border-bottom:1px solid #d9d0c2">${escapeHtml(copy.origin)}</td></tr><tr><td style="padding:13px;border-bottom:1px solid #d9d0c2"><b>E-mail</b></td><td style="padding:13px;border-bottom:1px solid #d9d0c2"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr><tr><td style="padding:13px;border-bottom:1px solid #d9d0c2"><b>WhatsApp</b></td><td style="padding:13px;border-bottom:1px solid #d9d0c2">${escapeHtml(phone)}</td></tr>${optionalRows}<tr><td style="padding:13px"><b>Recebido</b></td><td style="padding:13px">${escapeHtml(createdAt)}</td></tr></table><p style="margin:28px 0"><a href="${escapeHtml(whatsappUrl)}" style="display:inline-block;background:#7dd628;color:#17150f;text-decoration:none;padding:14px 20px;border:1px solid #17150f;border-radius:999px;font-weight:700">Responder pelo WhatsApp →</a></p><p style="font:12px/1.55 Arial,sans-serif;color:#5d584f">O contato autorizou a continuidade desta solicitação por e-mail e WhatsApp.</p></div></body></html>`;
 }
@@ -50,7 +51,7 @@ function visitorEmailHtml({ type, name, siteUrl }) {
   const firstName = escapeHtml(name.split(/\s+/)[0] || '');
   const body = type === 'event'
     ? 'Seu interesse na primeira edição foi registrado. Você receberá as novidades no e-mail e no WhatsApp informados.'
-    : 'Seu interesse em uma solução corporativa foi registrado. A Dulce poderá continuar esta conversa pelo e-mail ou WhatsApp informados.';
+    : 'Seu interesse em uma solução corporativa foi registrado. O Colapsei. E Agora? poderá continuar esta conversa pelo e-mail ou WhatsApp informados.';
   return `<!doctype html><html lang="pt-BR"><body style="margin:0;background:#f7ecd8;color:#17150f"><div style="max-width:620px;margin:auto;padding:44px 24px;font-family:Arial,sans-serif"><div style="font:600 11px Arial,sans-serif;letter-spacing:.14em">COLAPSEI. E AGORA? · ${escapeHtml(copy.title.toUpperCase())}</div><h1 style="font:500 38px/1.05 Georgia,serif;margin:26px 0">${firstName}, recebemos seu contato.</h1><p style="font:16px/1.65 Arial,sans-serif;color:#4b453f">${escapeHtml(body)}</p><p style="margin:30px 0"><a href="${escapeHtml(siteUrl)}" style="display:inline-block;background:#7dd628;color:#17150f;text-decoration:none;padding:14px 20px;border-radius:999px;font-weight:700">Voltar ao site →</a></p><p style="margin-top:40px;font:11px/1.55 Arial,sans-serif;color:#6b645a">Este canal não substitui atendimento clínico ou de emergência.</p></div></body></html>`;
 }
 
@@ -85,6 +86,7 @@ module.exports = async function handler(req, res) {
     const phone = normalizePhone(clean(body.phone, MAX.phone));
     const company = clean(body.company, MAX.company);
     const interest = clean(body.interest, MAX.interest);
+    const context = clean(body.context, MAX.context);
     const invalidFields = [
       !TYPES.has(type) && 'type',
       !name && 'name',
@@ -134,7 +136,7 @@ module.exports = async function handler(req, res) {
         contact_id: contactId,
         interest_type: type,
         company: company || null,
-        interest: interest || null,
+        interest: [interest, context ? `Contexto: ${context}` : ''].filter(Boolean).join('\n\n') || null,
         source: clean(body.source, 100),
         page_url: clean(body.page_url, MAX.url),
         utm_source: clean(body.utm_source, 160),
@@ -166,7 +168,7 @@ module.exports = async function handler(req, res) {
         from,
         to: notifyEmail,
         subject: `${copy.ownerSubject}: ${name}`,
-        html: ownerEmailHtml({ type, name, email, phone, company, interest, createdAt: now }),
+        html: ownerEmailHtml({ type, name, email, phone, company, interest, context, createdAt: now }),
         replyTo: email,
         idempotencyKey: `interest-owner-${leadId || email}`
       })

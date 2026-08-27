@@ -39,13 +39,13 @@ module.exports = async function handler(req, res) {
     const missing = Object.entries(configuration).filter(([, configured]) => !configured).map(([name]) => name);
     if (missing.length) {
       console.error('book_checkout_configuration_missing', missing.join(','));
-      return res.status(503).json({ error: 'A compra está temporariamente indisponível. Fale com a Dulce pelo WhatsApp.' });
+      return res.status(503).json({ error: 'A compra está temporariamente indisponível. Fale com o Colapsei. E Agora? pelo WhatsApp oficial.' });
     }
 
     const stripe = stripeClient();
     const account = await stripe.accounts.retrieve();
     if (!account.charges_enabled) {
-      return res.status(503).json({ error: 'A compra está temporariamente indisponível. Fale com a Dulce pelo WhatsApp.' });
+      return res.status(503).json({ error: 'A compra está temporariamente indisponível. Fale com o Colapsei. E Agora? pelo WhatsApp oficial.' });
     }
 
     const origin = siteOrigin(req);
@@ -79,7 +79,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ url: session.url });
   } catch (error) {
     console.error('book_checkout_error', error?.message || error);
-    return res.status(500).json({ error: 'Não foi possível abrir o checkout agora. Fale com a Dulce pelo WhatsApp.' });
+    return res.status(500).json({ error: 'Não foi possível abrir o checkout agora. Fale com o Colapsei. E Agora? pelo WhatsApp oficial.' });
   }
 };
 

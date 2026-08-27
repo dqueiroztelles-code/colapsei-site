@@ -73,6 +73,20 @@ test('captação corporativa e do evento inclui e-mail, WhatsApp e consentimento
   assert.match(html, /fetch\('\/api\/interest'/);
 });
 
+test('públicos corporativos têm continuidade equivalente e formulário completo', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const api = fs.readFileSync(path.join(root, 'api', 'interest.js'), 'utf8');
+  assert.match(html, /href="\/navegacoes#quem-colapsou">Conhecer a navegação individual/);
+  assert.match(html, /id="para-quem-cuida"/);
+  assert.match(html, /href="\/navegacoes#para-quem-cuida">Conhecer as navegações para quem cuida/);
+  assert.match(html, /<option>Todas as opções acima<\/option>/);
+  assert.match(html, /orientação personalizada sobre como a navegação em saúde mental/);
+  assert.match(html, /<textarea[^>]+name="context"[^>]+maxlength="3000"|<textarea[^>]+maxlength="3000"[^>]+name="context"/);
+  assert.match(html, /context:data\.get\('context'\)\|\|''/);
+  assert.match(api, /const context = clean\(body\.context, MAX\.context\)/);
+  assert.match(api, /Contexto: \$\{context\}/);
+});
+
 test('links de WhatsApp têm origem e mensagem contextual', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const links = [...html.matchAll(/<a\b[^>]*href="https:\/\/wa\.me\/5511983095381[^>]*>/g)].map((match) => match[0]);
@@ -82,6 +96,17 @@ test('links de WhatsApp têm origem e mensagem contextual', () => {
     assert.match(link, /data-wa-source=/);
   }
   assert.doesNotMatch(html, /consultoria personalizada/i);
+  assert.doesNotMatch(html, /data-wa-message="[^"]*Dulce/i);
+  assert.doesNotMatch(html, /CONVERSA DIRETA COM A DULCE|WhatsApp da Dulce|fale diretamente com a Dulce|Fale com a Dulce/i);
+});
+
+test('atendimento do Mapa usa a marca e preserva o nome pessoal apenas na autoria', () => {
+  const mapa = fs.readFileSync(path.join(root, 'mapa.html'), 'utf8');
+  const mapaApi = fs.readFileSync(path.join(root, 'api', 'mapa.js'), 'utf8');
+  assert.match(mapa, /Quero organizar isso com o Colapsei\. E Agora\?/);
+  assert.match(mapaApi, /Falar com o Colapsei\. E Agora\?/);
+  assert.doesNotMatch(mapa, /Oi, Dulce|com a Dulce|da Dulce|A Dulce/);
+  assert.doesNotMatch(mapaApi, /Oi, Dulce|com a Dulce|da Dulce|A Dulce/);
 });
 
 test('instrumentação de experiência e campanha está presente', () => {
@@ -89,4 +114,24 @@ test('instrumentação de experiência e campanha está presente', () => {
   assert.match(html, /\/_vercel\/insights\/script\.js/);
   assert.match(html, /\/_vercel\/speed-insights\/script\.js/);
   assert.match(html, /checkoutUrl\.searchParams\.set\('src','site_livro'\)/);
+});
+
+test('marcadores editoriais orientam sem numeração decorativa', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const labels = [
+    'ENTENDA O CENÁRIO · QUANDO TUDO SAI DO EIXO',
+    'COMECE POR AQUI · MAPA DO COLAPSO',
+    'COMO FUNCIONA</span><i aria-hidden="true">·</i> MÉTODO E AGORA?',
+    'NAVEGAÇÃO PERSONALIZADA · INTERNAÇÃO E CONTINUIDADE',
+    'ESCOLHA SEU CAMINHO · PARA VOCÊ, FAMÍLIAS E EMPRESAS',
+    'PARA EMPRESAS · COLAPSO, CUIDADO E LIDERANÇA',
+    'QUEM CRIOU · DULCE TELLES, FUNDADORA',
+    'LIVRO DIGITAL · DISPONÍVEL AGORA',
+    'EVENTO PRESENCIAL · PRIMEIRA EDIÇÃO'
+  ];
+
+  for (const label of labels) assert.ok(html.includes(label), `Marcador ausente: ${label}`);
+  assert.doesNotMatch(html, /<div class="section-label[^"]*">0[1-8] · (?:O QUE ACONTECE|O PRIMEIRO PASSO|O MÉTODO|NAVEGAÇÃO PERSONALIZADA|PARA EMPRESAS|DULCE TELLES · FUNDADORA|LIVRO DIGITAL · DISPONÍVEL|EXPERIÊNCIA AO VIVO)/);
+  assert.match(html, /class="method-index">01<\/span>/);
+  assert.match(html, /class="method-index">05<\/span>/);
 });
