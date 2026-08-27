@@ -1,4 +1,5 @@
 const ROUTES = new Set(['collapsei', 'cresci', 'alguem', 'sistema', 'reconstruir']);
+const { enforceRateLimit } = require('../lib/lead-guard');
 const ROUTE_LABELS = {
   collapsei: 'Eu colapsei',
   cresci: 'Cresci no colapso',
@@ -133,6 +134,8 @@ module.exports = async function handler(req, res) {
       apikey: serviceKey,
       Authorization: `Bearer ${serviceKey}`
     };
+    const rateLimit = await enforceRateLimit({ req, supabaseUrl, serviceKey, scope: 'mapa' });
+    if (!rateLimit.allowed) return res.status(429).json({ error: 'Recebemos várias tentativas. Aguarde um pouco e tente novamente.', saved: false, email_sent: false, owner_notified: false });
     const now = new Date().toISOString();
     const contactResponse = await fetch(`${supabaseUrl}/rest/v1/contacts?on_conflict=email`, {
       method: 'POST',

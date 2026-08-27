@@ -5,7 +5,9 @@
   "description": "Site do Colapsei. E Agora? com Mapa do Colapso e entrega protegida do livro.",
   "scripts": {
     "test": "node --test",
-    "check": "node --check api/mapa.js && node --check api/book-checkout.js && node --check api/book-access.js && node --check api/book-download.js && node --check api/book-webhook.js && node --check lib/book.js"
+    "check": "node --check api/mapa.js && node --check api/interest.js && node --check api/book-checkout.js && node --check api/book-access.js && node --check api/book-download.js && node --check api/book-webhook.js && node --check lib/book.js && node --check lib/lead-guard.js",
+    "sync:shell": "node scripts/sync-shell-pages.mjs",
+    "backup:leads": "sh scripts/backup-supabase.sh"
   },
   "engines": {
     "node": "24.x"
