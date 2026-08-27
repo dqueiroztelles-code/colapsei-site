@@ -115,3 +115,23 @@ test('instrumentação de experiência e campanha está presente', () => {
   assert.match(html, /\/_vercel\/speed-insights\/script\.js/);
   assert.match(html, /checkoutUrl\.searchParams\.set\('src','site_livro'\)/);
 });
+
+test('marcadores editoriais orientam sem numeração decorativa', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const labels = [
+    'ENTENDA O CENÁRIO · QUANDO TUDO SAI DO EIXO',
+    'COMECE POR AQUI · MAPA DO COLAPSO',
+    'COMO FUNCIONA</span><i aria-hidden="true">·</i> MÉTODO E AGORA?',
+    'NAVEGAÇÃO PERSONALIZADA · INTERNAÇÃO E CONTINUIDADE',
+    'ESCOLHA SEU CAMINHO · PARA VOCÊ, FAMÍLIAS E EMPRESAS',
+    'PARA EMPRESAS · COLAPSO, CUIDADO E LIDERANÇA',
+    'QUEM CRIOU · DULCE TELLES, FUNDADORA',
+    'LIVRO DIGITAL · DISPONÍVEL AGORA',
+    'EVENTO PRESENCIAL · PRIMEIRA EDIÇÃO'
+  ];
+
+  for (const label of labels) assert.ok(html.includes(label), `Marcador ausente: ${label}`);
+  assert.doesNotMatch(html, /<div class="section-label[^"]*">0[1-8] · (?:O QUE ACONTECE|O PRIMEIRO PASSO|O MÉTODO|NAVEGAÇÃO PERSONALIZADA|PARA EMPRESAS|DULCE TELLES · FUNDADORA|LIVRO DIGITAL · DISPONÍVEL|EXPERIÊNCIA AO VIVO)/);
+  assert.match(html, /class="method-index">01<\/span>/);
+  assert.match(html, /class="method-index">05<\/span>/);
+});
