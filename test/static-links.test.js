@@ -73,6 +73,15 @@ test('captação corporativa e do evento inclui e-mail, WhatsApp e consentimento
   assert.match(html, /fetch\('\/api\/interest'/);
 });
 
+test('públicos corporativos têm continuidade equivalente e formulário completo', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert.match(html, /href="\/navegacoes#quem-colapsou">Conhecer a navegação individual/);
+  assert.match(html, /id="para-quem-cuida"/);
+  assert.match(html, /href="\/navegacoes#para-quem-cuida">Conhecer as navegações para quem cuida/);
+  assert.match(html, /<option>Todas as opções acima<\/option>/);
+  assert.match(html, /orientação personalizada sobre como a navegação em saúde mental/);
+});
+
 test('links de WhatsApp têm origem e mensagem contextual', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const links = [...html.matchAll(/<a\b[^>]*href="https:\/\/wa\.me\/5511983095381[^>]*>/g)].map((match) => match[0]);
