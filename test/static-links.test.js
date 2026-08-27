@@ -75,11 +75,16 @@ test('captação corporativa e do evento inclui e-mail, WhatsApp e consentimento
 
 test('públicos corporativos têm continuidade equivalente e formulário completo', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const api = fs.readFileSync(path.join(root, 'api', 'interest.js'), 'utf8');
   assert.match(html, /href="\/navegacoes#quem-colapsou">Conhecer a navegação individual/);
   assert.match(html, /id="para-quem-cuida"/);
   assert.match(html, /href="\/navegacoes#para-quem-cuida">Conhecer as navegações para quem cuida/);
   assert.match(html, /<option>Todas as opções acima<\/option>/);
   assert.match(html, /orientação personalizada sobre como a navegação em saúde mental/);
+  assert.match(html, /<textarea[^>]+name="context"[^>]+maxlength="3000"|<textarea[^>]+maxlength="3000"[^>]+name="context"/);
+  assert.match(html, /context:data\.get\('context'\)\|\|''/);
+  assert.match(api, /const context = clean\(body\.context, MAX\.context\)/);
+  assert.match(api, /Contexto: \$\{context\}/);
 });
 
 test('links de WhatsApp têm origem e mensagem contextual', () => {
@@ -91,6 +96,17 @@ test('links de WhatsApp têm origem e mensagem contextual', () => {
     assert.match(link, /data-wa-source=/);
   }
   assert.doesNotMatch(html, /consultoria personalizada/i);
+  assert.doesNotMatch(html, /data-wa-message="[^"]*Dulce/i);
+  assert.doesNotMatch(html, /CONVERSA DIRETA COM A DULCE|WhatsApp da Dulce|fale diretamente com a Dulce|Fale com a Dulce/i);
+});
+
+test('atendimento do Mapa usa a marca e preserva o nome pessoal apenas na autoria', () => {
+  const mapa = fs.readFileSync(path.join(root, 'mapa.html'), 'utf8');
+  const mapaApi = fs.readFileSync(path.join(root, 'api', 'mapa.js'), 'utf8');
+  assert.match(mapa, /Quero organizar isso com o Colapsei\. E Agora\?/);
+  assert.match(mapaApi, /Falar com o Colapsei\. E Agora\?/);
+  assert.doesNotMatch(mapa, /Oi, Dulce|com a Dulce|da Dulce|A Dulce/);
+  assert.doesNotMatch(mapaApi, /Oi, Dulce|com a Dulce|da Dulce|A Dulce/);
 });
 
 test('instrumentação de experiência e campanha está presente', () => {

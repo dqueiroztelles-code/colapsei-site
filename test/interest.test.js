@@ -20,11 +20,14 @@ test('e-mail interno do lead contém origem e resposta contextual sem expor segr
     phone: '+5511999998888',
     company: 'Empresa QA',
     interest: 'Workshop',
+    context: 'A empresa precisa organizar o retorno de colaboradores após afastamentos.',
     createdAt: '2026-08-27T12:00:00.000Z'
   });
   assert.match(html, /página Para Empresas/);
   assert.match(html, /Responder pelo WhatsApp/);
   assert.match(html, /Empresa QA/);
+  assert.match(html, /Contexto/);
+  assert.match(html, /retorno de colaboradores/);
   assert.doesNotMatch(html, /SUPABASE|RESEND_API_KEY/);
 });
 
