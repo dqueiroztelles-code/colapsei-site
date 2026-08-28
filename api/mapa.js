@@ -8,6 +8,8 @@ const ROUTE_LABELS = {
   reconstruir: 'Preciso reconstruir'
 };
 const MAX = { name: 120, email: 254, phone: 24, answer: 80, title: 220, url: 1000, text: 1800 };
+const REQUEST_LIMIT = { windowMs: 60_000, max: 5, bodyBytes: 48_000 };
+const requestBuckets = new Map();
 
 function clean(value, max = MAX.text) {
   return String(value ?? '').trim().slice(0, max);
@@ -22,6 +24,27 @@ function normalizePhone(value) {
   if (/^\d{10,11}$/.test(digits)) return `+55${digits}`;
   if (/^55\d{10,11}$/.test(digits)) return `+${digits}`;
   return '';
+}
+
+function requestKey(req) {
+  const forwarded = String(req.headers?.['x-forwarded-for'] || '').split(',')[0].trim();
+  return forwarded || String(req.headers?.['x-real-ip'] || req.socket?.remoteAddress || 'unknown');
+}
+
+function isRateLimited(req, now = Date.now()) {
+  const key = requestKey(req);
+  const current = requestBuckets.get(key);
+  if (!current || now - current.startedAt >= REQUEST_LIMIT.windowMs) {
+    requestBuckets.set(key, { startedAt: now, count: 1 });
+    return false;
+  }
+  current.count += 1;
+  if (requestBuckets.size > 500) {
+    for (const [bucketKey, bucket] of requestBuckets) {
+      if (now - bucket.startedAt >= REQUEST_LIMIT.windowMs) requestBuckets.delete(bucketKey);
+    }
+  }
+  return current.count > REQUEST_LIMIT.max;
 }
 
 function escapeHtml(value) {
@@ -64,11 +87,14 @@ function visitorEmailHtml({ name, result, siteUrl, contactUrl }) {
   return `<!doctype html><html lang="pt-BR"><body style="margin:0;background:#f7ecd8;color:#17150f"><div style="max-width:680px;margin:auto;padding:44px 24px;font-family:Arial,sans-serif"><div style="font:600 11px Arial,sans-serif;letter-spacing:.14em">COLAPSEI. E AGORA? · MAPA DO COLAPSO</div><h1 style="font:500 42px/1.02 Georgia,serif;margin:28px 0 18px">${firstName ? `${firstName}, seu Mapa está pronto.` : 'Seu Mapa está pronto.'}</h1><p style="font:17px/1.65 Arial,sans-serif;color:#5d584f">${escapeHtml(result.lead)}</p><div style="margin:30px 0;padding:24px;background:#17150f;color:#f7ecd8"><div style="font:600 11px Arial,sans-serif;letter-spacing:.12em;color:#b9d92e">SEU PONTO DE PARTIDA</div><h2 style="font:500 30px/1.05 Georgia,serif;margin:12px 0">${escapeHtml(result.title)}</h2><p style="font:15px/1.65 Arial,sans-serif;color:#ded5c7">${escapeHtml(result.summary)}</p></div><h2 style="font:500 28px Georgia,serif;margin:36px 0 8px">O que parece vir primeiro</h2><table role="presentation" style="width:100%;border-collapse:collapse">${priorities}</table><h2 style="font:500 28px Georgia,serif;margin:36px 0 14px">Perguntas que vale responder</h2><ul style="padding-left:20px;font:14px/1.55 Arial,sans-serif;color:#5d584f">${questions}</ul><p style="margin:36px 0 12px"><a href="${escapeHtml(siteUrl)}" style="display:inline-block;background:#b9d92e;color:#17150f;text-decoration:none;padding:14px 20px;border-radius:999px;font-weight:700">Voltar ao Mapa →</a></p><div style="margin-top:42px;padding-top:28px;border-top:1px solid #d9d0c2"><h2 style="font:500 28px Georgia,serif;margin:0 0 10px">Quer ajuda para organizar isso?</h2><p style="font:14px/1.6 Arial,sans-serif;color:#5d584f">O Colapsei. E Agora? pode ajudar a organizar informações, perguntas, responsabilidades e próximos passos. Não é terapia nem atendimento clínico. É navegação.</p><a href="${escapeHtml(contactUrl)}" style="font-weight:700;color:#0f6b4c">Falar com o Colapsei. E Agora? →</a></div><p style="margin-top:44px;font:11px/1.55 Arial,sans-serif;color:#7b7468">O Mapa do Colapso organiza informações e próximos passos. Não realiza diagnóstico, não indica tratamento, não orienta medicação e não substitui profissionais habilitados ou serviços de emergência.</p></div></body></html>`;
 }
 
-function ownerEmailHtml({ name, email, phone, route, createdAt }) {
+function ownerEmailHtml({ name, email, phone, route, createdAt, whatsappConsent }) {
   const phoneDigits = phone.replace(/\D/g, '');
   const message = encodeURIComponent(`Oi, ${name.split(/\s+/)[0] || ''}. Vi que você concluiu o Mapa do Colapso. Como posso ajudar a organizar seus próximos passos?`);
   const whatsappUrl = `https://wa.me/${phoneDigits}?text=${message}`;
-  return `<!doctype html><html lang="pt-BR"><body style="margin:0;background:#f7ecd8;color:#17150f"><div style="max-width:620px;margin:auto;padding:40px 24px;font-family:Arial,sans-serif"><div style="font:600 11px Arial,sans-serif;letter-spacing:.14em">NOVO CONTATO · MAPA DO COLAPSO</div><h1 style="font:500 36px/1.05 Georgia,serif;margin:24px 0">${escapeHtml(name)} concluiu o Mapa.</h1><table role="presentation" style="width:100%;border-collapse:collapse;background:#fff8ea"><tr><td style="padding:14px;border-bottom:1px solid #d9d0c2"><b>Rota</b></td><td style="padding:14px;border-bottom:1px solid #d9d0c2">${escapeHtml(ROUTE_LABELS[route])}</td></tr><tr><td style="padding:14px;border-bottom:1px solid #d9d0c2"><b>E-mail</b></td><td style="padding:14px;border-bottom:1px solid #d9d0c2"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr><tr><td style="padding:14px;border-bottom:1px solid #d9d0c2"><b>WhatsApp</b></td><td style="padding:14px;border-bottom:1px solid #d9d0c2">${escapeHtml(phone)}</td></tr><tr><td style="padding:14px"><b>Recebido</b></td><td style="padding:14px">${escapeHtml(createdAt)}</td></tr></table><p style="margin:28px 0"><a href="${escapeHtml(whatsappUrl)}" style="display:inline-block;background:#7dd628;color:#17150f;text-decoration:none;padding:14px 20px;border:1px solid #17150f;border-radius:999px;font-weight:700">Abrir conversa no WhatsApp →</a></p><p style="font:12px/1.55 Arial,sans-serif;color:#6b645a">As respostas pessoais não foram incluídas neste aviso. O contato autorizou receber uma mensagem de continuidade pelo WhatsApp.</p></div></body></html>`;
+  const whatsappRow = phone ? `<tr><td style="padding:14px;border-bottom:1px solid #d9d0c2"><b>WhatsApp</b></td><td style="padding:14px;border-bottom:1px solid #d9d0c2">${escapeHtml(phone)}</td></tr>` : '';
+  const whatsappAction = whatsappConsent && phone ? `<p style="margin:28px 0"><a href="${escapeHtml(whatsappUrl)}" style="display:inline-block;background:#7dd628;color:#17150f;text-decoration:none;padding:14px 20px;border:1px solid #17150f;border-radius:999px;font-weight:700">Abrir conversa no WhatsApp →</a></p>` : '';
+  const consentNote = whatsappConsent ? 'O contato autorizou receber uma mensagem de continuidade pelo WhatsApp.' : 'O contato não autorizou continuidade por WhatsApp. Se necessário, responda apenas por e-mail.';
+  return `<!doctype html><html lang="pt-BR"><body style="margin:0;background:#f7ecd8;color:#17150f"><div style="max-width:620px;margin:auto;padding:40px 24px;font-family:Arial,sans-serif"><div style="font:600 11px Arial,sans-serif;letter-spacing:.14em">NOVO CONTATO · MAPA DO COLAPSO</div><h1 style="font:500 36px/1.05 Georgia,serif;margin:24px 0">${escapeHtml(name)} concluiu o Mapa.</h1><table role="presentation" style="width:100%;border-collapse:collapse;background:#fff8ea"><tr><td style="padding:14px;border-bottom:1px solid #d9d0c2"><b>Rota</b></td><td style="padding:14px;border-bottom:1px solid #d9d0c2">${escapeHtml(ROUTE_LABELS[route])}</td></tr><tr><td style="padding:14px;border-bottom:1px solid #d9d0c2"><b>E-mail</b></td><td style="padding:14px;border-bottom:1px solid #d9d0c2"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>${whatsappRow}<tr><td style="padding:14px"><b>Recebido</b></td><td style="padding:14px">${escapeHtml(createdAt)}</td></tr></table>${whatsappAction}<p style="font:12px/1.55 Arial,sans-serif;color:#6b645a">As respostas pessoais não foram incluídas neste aviso. ${consentNote}</p></div></body></html>`;
 }
 
 async function sendEmail({ apiKey, from, to, subject, html, replyTo, idempotencyKey }) {
@@ -91,12 +117,20 @@ async function sendEmail({ apiKey, from, to, subject, html, replyTo, idempotency
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método não permitido.' });
+  if (isRateLimited(req)) {
+    res.setHeader('Retry-After', '60');
+    return res.status(429).json({ error: 'Muitas tentativas. Aguarde um minuto e tente novamente.' });
+  }
 
   try {
+    const rawLength = Buffer.byteLength(typeof req.body === 'string' ? req.body : JSON.stringify(req.body || {}));
+    if (rawLength > REQUEST_LIMIT.bodyBytes) return res.status(413).json({ error: 'Dados enviados acima do limite permitido.' });
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
     const name = clean(body.name, MAX.name);
     const email = clean(body.email, MAX.email).toLowerCase();
-    const phone = normalizePhone(clean(body.phone, MAX.phone));
+    const rawPhone = clean(body.phone, MAX.phone);
+    const phone = rawPhone ? normalizePhone(rawPhone) : '';
+    const whatsappConsent = body.whatsapp_contact_consent === true;
     const route = clean(body.route, 40);
     const privacyVersion = clean(body.privacy_version, 80);
     const answers = [clean(body.answer_1, MAX.answer), clean(body.answer_2, MAX.answer), clean(body.answer_3, MAX.answer)];
@@ -106,12 +140,12 @@ module.exports = async function handler(req, res) {
     const invalidFields = [
       !name && 'name',
       !validEmail(email) && 'email',
-      !phone && 'phone',
+      rawPhone && !phone && 'phone',
+      whatsappConsent && !phone && 'phone',
       !ROUTES.has(route) && 'route',
       !privacyVersion && 'privacy_version',
       answers.some((answer) => !answer) && 'answers',
-      body.privacy_ack !== true && 'privacy_ack',
-      body.whatsapp_contact_consent !== true && 'whatsapp_contact_consent'
+      body.privacy_ack !== true && 'privacy_ack'
     ].filter(Boolean);
 
     if (invalidFields.length) {
@@ -140,7 +174,7 @@ module.exports = async function handler(req, res) {
     const contactResponse = await fetch(`${supabaseUrl}/rest/v1/contacts?on_conflict=email`, {
       method: 'POST',
       headers: { ...dbHeaders, Prefer: 'resolution=merge-duplicates,return=representation' },
-      body: JSON.stringify({ name, email, phone, privacy_ack_at: now, whatsapp_contact_consent: true, whatsapp_consented_at: now, updated_at: now })
+      body: JSON.stringify({ name, email, phone: phone || null, privacy_ack_at: now, whatsapp_contact_consent: whatsappConsent, whatsapp_consented_at: whatsappConsent ? now : null, updated_at: now })
     });
     if (!contactResponse.ok) throw new Error(`Falha ao salvar contato (${contactResponse.status}).`);
     const contactId = (await contactResponse.json())[0]?.id;
@@ -192,7 +226,7 @@ module.exports = async function handler(req, res) {
         from,
         to: notifyEmail,
         subject: `Novo contato no Mapa: ${name}`,
-        html: ownerEmailHtml({ name, email, phone, route, createdAt: now }),
+        html: ownerEmailHtml({ name, email, phone, route, createdAt: now, whatsappConsent }),
         replyTo: email,
         idempotencyKey: `mapa-owner-${sessionId || body.lead_id || email}`
       })
@@ -220,4 +254,4 @@ module.exports = async function handler(req, res) {
   }
 };
 
-module.exports._test = { clean, validEmail, normalizePhone, snapshot, whatsappContactUrl };
+module.exports._test = { clean, validEmail, normalizePhone, snapshot, whatsappContactUrl, requestKey, isRateLimited, ownerEmailHtml };

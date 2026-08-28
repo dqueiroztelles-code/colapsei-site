@@ -2,7 +2,7 @@
   "name": "colapsei-site",
   "version": "1.4.0",
   "private": true,
-  "description": "Site do Colapsei. E Agora? com Mapa do Colapso e entrega protegida do livro.",
+  "description": "Site do Colapsei. E Agora? com Mapa do Colapso e venda do livro pela Kiwify.",
   "scripts": {
     "test": "node --test",
     "check": "node --check api/mapa.js && node --check api/interest.js && node --check api/book-checkout.js && node --check api/book-access.js && node --check api/book-download.js && node --check api/book-webhook.js && node --check lib/book.js && node --check lib/lead-guard.js",
@@ -11,8 +11,5 @@
   },
   "engines": {
     "node": "24.x"
-  },
-  "dependencies": {
-    "stripe": "22.4.0"
   }
 }

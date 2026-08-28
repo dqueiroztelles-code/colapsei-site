@@ -15,35 +15,30 @@ Copie `.env.example` para `.env.local` e preencha as variáveis somente no ambie
 
 ## Captação do Mapa
 
-`POST /api/mapa` valida nome, e-mail, WhatsApp, consentimentos e respostas. Depois:
+`POST /api/mapa` valida nome, e-mail, WhatsApp opcional, consentimentos e respostas. Depois:
 
 1. atualiza ou cria o contato no Supabase;
 2. salva uma sessão do Mapa sem persistir o texto completo do resultado;
 3. envia o resultado ao visitante;
-4. envia um aviso operacional para `MAPA_NOTIFY_EMAIL`, com link para abrir o WhatsApp do contato.
+4. envia um aviso operacional para `MAPA_NOTIFY_EMAIL`; o link de WhatsApp só aparece quando houve autorização específica.
 
-O aviso operacional não inclui as respostas pessoais. O telefone só é aceito com consentimento explícito para contato via WhatsApp.
+O aviso operacional não inclui as respostas pessoais. O telefone é opcional e a continuidade por WhatsApp exige consentimento explícito.
 
-## Livro e Stripe
+## Livro e Kiwify
 
-- `POST /api/book-checkout`: cria uma Checkout Session hospedada pela Stripe.
-- `POST /api/book-webhook`: confirma o pagamento e dispara a entrega idempotente.
-- `GET /api/book-access`: consulta uma sessão paga e emite um link protegido.
-- `GET /api/book-download`: revalida o pagamento e redireciona para um link curto do Supabase Storage.
-
-O bucket do livro deve ser privado. O webhook deve ouvir `checkout.session.completed` e `checkout.session.async_payment_succeeded` em `/api/book-webhook`.
+O botão de compra leva diretamente ao checkout `https://pay.kiwify.com.br/FMBFGL4`. No desktop ele abre em nova aba; no celular, na mesma tela. Parâmetros `utm_*` e `src` são preservados para atribuição. Pagamento, confirmação e entrega do PDF são operados pela Kiwify.
 
 ## Banco
 
-Execute `supabase/schema.sql` no SQL Editor do projeto Supabase. Ele é idempotente e cria as tabelas do Mapa e dos pedidos do livro.
+Execute `supabase/schema.sql` no SQL Editor do projeto Supabase. Ele é idempotente e cria as tabelas do Mapa. Em instalações existentes, execute também os arquivos ainda não aplicados de `supabase/migrations/`.
 
 ## Critério de lançamento
 
 - domínio correto e variação `www` respondendo com HTTPS;
 - um lead real de QA confirmado no Supabase e nas duas caixas de e-mail;
 - link de WhatsApp do aviso abrindo a conversa correta;
-- Stripe com `charges_enabled: true`;
-- compra real de QA confirmada, e-mail recebido e PDF baixado;
+- checkout da Kiwify abrindo corretamente em desktop e celular;
+- compra real de QA confirmada, e-mail recebido e acesso ao PDF validado;
 - Home, Mapa e compra validados em desktop e celular.
 
 O produto não diagnostica, não prescreve e não substitui profissionais habilitados ou serviços de emergência.

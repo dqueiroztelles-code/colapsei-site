@@ -57,10 +57,12 @@ test('checkout do livro abre nova aba no desktop e mantém navegação no celula
   for (const file of checkoutFiles) {
     const html = fs.readFileSync(file, 'utf8');
     assert.match(html, /desktopCheckout=window\.matchMedia\('\(min-width: 768px\)'\)\.matches/);
-    assert.match(html, /desktopCheckout\?window\.open\('about:blank','_blank'\):null/);
-    assert.match(html, /else\{\s*location\.href=checkoutUrl\.toString\(\);/);
-    assert.match(html, /Pagamento seguro processado pela Kiwify/);
+    assert.match(html, /window\.open\(checkoutUrl,'_blank','noopener'\)/);
+    assert.match(html, /location\.href=checkoutUrl/);
+    assert.match(html, /https:\/\/pay\.kiwify\.com\.br\/FMBFGL4/);
+    assert.match(html, /Pagamento e entrega realizados pela Kiwify/);
     assert.doesNotMatch(html, /Pagamento seguro (?:por cartão )?pela Stripe/);
+    assert.doesNotMatch(html, /\/api\/book-checkout/);
   }
 });
 
@@ -113,7 +115,7 @@ test('instrumentação de experiência e campanha está presente', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   assert.match(html, /\/_vercel\/insights\/script\.js/);
   assert.match(html, /\/_vercel\/speed-insights\/script\.js/);
-  assert.match(html, /checkoutUrl\.searchParams\.set\('src','site_livro'\)/);
+  assert.match(html, /url\.searchParams\.set\('src','site_livro'\)/);
 });
 
 test('marcadores editoriais orientam sem numeração decorativa', () => {
