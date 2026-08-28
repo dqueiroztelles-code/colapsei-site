@@ -23,6 +23,25 @@ function normalizePhone(value) {
   return '';
 }
 
+function validFormTiming(value, now = Date.now()) {
+  const startedAt = Number(value);
+  if (!Number.isFinite(startedAt)) return false;
+  const elapsed = now - startedAt;
+  return elapsed >= 1500 && elapsed <= 2 * 60 * 60 * 1000;
+}
+
+function sameOriginRequest(req) {
+  const origin = clean(req.headers.origin, MAX.url);
+  if (!origin) return true;
+  const protocol = clean(req.headers['x-forwarded-proto'] || 'https', 20);
+  const host = clean(req.headers.host, 255);
+  try {
+    return new URL(origin).origin === `${protocol}://${host}`;
+  } catch {
+    return false;
+  }
+}
+
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, (character) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -91,6 +110,10 @@ module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método não permitido.' });
 
+  const contentLength = Number(req.headers['content-length'] || 0);
+  if (contentLength > 64 * 1024) return res.status(413).json({ error: 'Envio muito grande.' });
+  if (!sameOriginRequest(req)) return res.status(403).json({ error: 'Origem não autorizada.' });
+
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
     const name = clean(body.name, MAX.name);
@@ -101,12 +124,29 @@ module.exports = async function handler(req, res) {
     const answers = [clean(body.answer_1, MAX.answer), clean(body.answer_2, MAX.answer), clean(body.answer_3, MAX.answer)];
 
     if (body.website) return res.status(200).json({ saved: true, email_sent: false, owner_notified: false });
-    if (!name || !validEmail(email) || !phone || !ROUTES.has(route) || !privacyVersion || answers.some((answer) => !answer) || body.privacy_ack !== true || body.whatsapp_contact_consent !== true) {
-      return res.status(400).json({ error: 'Dados obrigatórios inválidos.' });
+
+    const invalidFields = [
+      !name && 'name',
+      !validEmail(email) && 'email',
+      !phone && 'phone',
+      !ROUTES.has(route) && 'route',
+      !privacyVersion && 'privacy_version',
+      answers.some((answer) => !answer) && 'answers',
+      body.privacy_ack !== true && 'privacy_ack',
+      body.whatsapp_contact_consent !== true && 'whatsapp_contact_consent',
+      !validFormTiming(body.form_started_at) && 'form_started_at'
+    ].filter(Boolean);
+
+    if (invalidFields.length) {
+      console.warn('mapa_validation_error', invalidFields.join(','));
+      return res.status(400).json({ error: 'Confira os dados informados.', fields: invalidFields });
     }
 
     const result = snapshot(body.result_snapshot);
-    if (!result.title || result.priorities.length !== 3) return res.status(400).json({ error: 'Resultado incompleto.' });
+    if (!result.title || result.priorities.length !== 3) {
+      console.warn('mapa_validation_error', 'result_snapshot');
+      return res.status(400).json({ error: 'Resultado incompleto.', fields: ['result_snapshot'] });
+    }
 
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -186,11 +226,18 @@ module.exports = async function handler(req, res) {
         owner_notification_status: ownerNotified ? 'sent' : (notifyEmail ? 'failed' : 'disabled'),
         owner_notified_at: ownerNotified ? new Date().toISOString() : null
       };
-      const updateResponse = await fetch(`${supabaseUrl}/rest/v1/map_sessions?id=eq.${encodeURIComponent(sessionId)}`, {
+      let updateResponse = await fetch(`${supabaseUrl}/rest/v1/map_sessions?id=eq.${encodeURIComponent(sessionId)}`, {
         method: 'PATCH',
         headers: { ...dbHeaders, Prefer: 'return=minimal' },
         body: JSON.stringify(update)
       });
+      if (!updateResponse.ok && updateResponse.status === 400) {
+        updateResponse = await fetch(`${supabaseUrl}/rest/v1/map_sessions?id=eq.${encodeURIComponent(sessionId)}`, {
+          method: 'PATCH',
+          headers: { ...dbHeaders, Prefer: 'return=minimal' },
+          body: JSON.stringify({ email_status: update.email_status, email_sent_at: update.email_sent_at })
+        });
+      }
       if (!updateResponse.ok) console.error('mapa_status_update_error', updateResponse.status);
     }
 
@@ -201,4 +248,4 @@ module.exports = async function handler(req, res) {
   }
 };
 
-module.exports._test = { clean, validEmail, normalizePhone, snapshot, whatsappContactUrl };
+module.exports._test = { clean, validEmail, normalizePhone, validFormTiming, sameOriginRequest, snapshot, whatsappContactUrl };

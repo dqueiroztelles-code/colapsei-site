@@ -87,7 +87,7 @@ h1{font-size:clamp(3.8rem,8.5vw,8rem);line-height:.9;margin-bottom:28px;max-widt
 .question-actions{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-top:30px}
 .preview{background:var(--charcoal);color:var(--paper);padding:clamp(32px,5vw,58px);position:relative;overflow:hidden}.preview:after{content:"";position:absolute;width:120px;height:120px;border:12px solid var(--lime);border-radius:50%;right:-38px;top:-48px}.preview .step-label{color:rgba(251,239,216,.58)}.preview h2{font-size:clamp(3rem,5vw,5.2rem);max-width:680px}.preview p{font-size:17px;line-height:1.65;max-width:610px;color:rgba(251,239,216,.75)}.preview .preview-focus{margin:36px 0 0;padding-top:24px;border-top:1px solid rgba(251,239,216,.24);display:grid;grid-template-columns:140px 1fr;gap:24px}.preview-focus b{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--lime)}.preview-focus span{font-family:Newsreader,serif;font-size:27px;line-height:1.15}
 .capture{display:grid;grid-template-columns:1fr .8fr;gap:60px;align-items:start}.capture-card{border-top:1px solid var(--charcoal);padding-top:26px}.field{margin-bottom:18px}.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:8px}.field input{width:100%;border:1px solid rgba(23,21,15,.35);background:rgba(255,255,255,.2);padding:15px 14px;border-radius:0;outline:none}.field input:focus{border-color:var(--charcoal);box-shadow:0 0 0 2px var(--lime)}
-.check{display:grid;grid-template-columns:20px 1fr;gap:10px;font-size:12px;line-height:1.5;color:var(--graphite);margin:18px 0}.check input{margin:3px 0 0}.check a{text-decoration:underline;text-underline-offset:3px}.hp-field{position:absolute!important;left:-10000px!important;top:auto!important;width:1px!important;height:1px!important;overflow:hidden!important}.privacy-note{font-size:12px;line-height:1.55;color:var(--graphite);padding-top:18px;border-top:1px solid var(--line)}.capture-summary{background:var(--sand);padding:28px}.capture-summary b{font-size:10px;text-transform:uppercase;letter-spacing:.1em}.capture-summary h3{font-family:Newsreader,serif;font-size:32px;font-weight:500;line-height:1.05;margin:14px 0}.capture-summary p{font-size:13px;line-height:1.55;color:var(--graphite)}
+.check{display:grid;grid-template-columns:20px 1fr;gap:10px;font-size:12px;line-height:1.5;color:var(--graphite);margin:14px 0}.check+.check{margin-top:10px}.check input{margin:3px 0 0}.check a{text-decoration:underline;text-underline-offset:3px}.hp-field{position:absolute!important;left:-10000px!important;top:auto!important;width:1px!important;height:1px!important;overflow:hidden!important}.privacy-note{font-size:12px;line-height:1.55;color:var(--graphite);padding-top:18px;border-top:1px solid var(--line)}.capture-summary{background:var(--sand);padding:28px}.capture-summary b{font-size:10px;text-transform:uppercase;letter-spacing:.1em}.capture-summary h3{font-family:Newsreader,serif;font-size:32px;font-weight:500;line-height:1.05;margin:14px 0}.capture-summary p{font-size:13px;line-height:1.55;color:var(--graphite)}
 .result{background:var(--charcoal);color:var(--paper);margin:0 calc(50% - 50vw);padding:clamp(56px,8vw,110px) max(18px,calc((100vw - 1180px)/2));min-height:100vh}.result-shell{max-width:1080px}.result .step-label{color:rgba(251,239,216,.55)}.result h2{font-size:clamp(3.2rem,6vw,6.6rem);max-width:900px;margin-bottom:24px}.result-lead{font-size:clamp(1.15rem,2vw,1.55rem);line-height:1.5;color:rgba(251,239,216,.76);max-width:820px}.result-dynamic{margin-top:28px;padding:22px 0;border-top:1px solid rgba(251,239,216,.2);border-bottom:1px solid rgba(251,239,216,.2);font-size:16px;line-height:1.65;color:rgba(251,239,216,.76);max-width:820px}
 .result-signal{margin-top:18px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(251,239,216,.48)}.orientation-card{display:grid;grid-template-columns:minmax(180px,.55fr) 1.45fr;gap:36px;padding:34px;border:1px solid rgba(251,239,216,.22);border-radius:18px;background:rgba(251,239,216,.045)}.orientation-card b{font-family:Newsreader,serif;font-size:30px;font-weight:500;line-height:1.05}.orientation-card p{font-size:15px;line-height:1.7;color:rgba(251,239,216,.72);max-width:720px}
 .result-section{padding:60px 0;border-bottom:1px solid rgba(251,239,216,.18)}.result-section h3{font-family:Newsreader,serif;font-size:38px;font-weight:500;margin-bottom:28px}.priority-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(251,239,216,.25)}.priority{padding:24px 24px 18px 0;border-right:1px solid rgba(251,239,216,.18)}.priority+ .priority{padding-left:24px}.priority span{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--lime);color:var(--charcoal);font-size:10px;font-weight:600;margin-bottom:24px}.priority b{display:block;font-family:Newsreader,serif;font-size:26px;font-weight:500;margin-bottom:10px}.priority p{font-size:13px;line-height:1.55;color:rgba(251,239,216,.62)}
@@ -258,7 +258,7 @@ body[data-map-stage="capture"] .field input{background:var(--paper);border:1px s
     </div>
     <div data-screen="capture" hidden>
       <header class="work-head"><div class="step-label">03 · RECEBER</div><h2>Para quem enviamos o seu Mapa?</h2><p class="work-intro">O resultado aparece na tela imediatamente. Seu e-mail e WhatsApp identificam esta sessão para que você possa receber e dar continuidade ao seu Mapa.</p></header>
-      <div class="capture"><form class="capture-card" id="leadForm"><div class="hp-field" aria-hidden="true"><label for="website">Deixe este campo vazio</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div><div class="field"><label for="name">Nome</label><input id="name" name="name" autocomplete="name" required></div><div class="field"><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" required></div><div class="field"><label for="phone">WhatsApp</label><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" minlength="10" maxlength="20" required></div><label class="check"><input type="checkbox" id="privacy" required><span>Li a <a href="/privacidade" target="_blank" rel="noopener">Política de Privacidade</a> e concordo com o uso dos meus dados para gerar e entregar meu Mapa e para contato sobre próximos passos relacionados a ele.</span></label><button class="action tool" type="submit" id="leadSubmit">Abrir meu Mapa →</button><p class="form-status" id="leadStatus" role="status" aria-live="polite"></p><p class="privacy-note">Não pedimos diagnóstico, medicação, nome de familiares nem relato aberto nesta etapa. Trabalhamos apenas com categorias de navegação nesta etapa.</p></form><aside class="capture-summary"><b>SEU TERRITÓRIO</b><h3 id="captureRoute"></h3><p>Suas três respostas serão usadas apenas para montar uma direção inicial mais pertinente. Não há score, nível de gravidade ou classificação clínica.</p></aside></div>
+      <div class="capture"><form class="capture-card" id="leadForm"><div class="hp-field" aria-hidden="true"><label for="website">Deixe este campo vazio</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div><div class="field"><label for="name">Nome</label><input id="name" name="name" autocomplete="name" required></div><div class="field"><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" required></div><div class="field"><label for="phone">WhatsApp</label><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" minlength="10" maxlength="20" required></div><label class="check"><input type="checkbox" id="privacy" required><span>Li a <a href="/privacidade" target="_blank" rel="noopener">Política de Privacidade</a> e concordo com o uso dos meus dados para gerar, armazenar e entregar meu Mapa.</span></label><label class="check"><input type="checkbox" id="whatsappConsent" required><span>Autorizo um contato no WhatsApp informado para continuidade relacionada ao meu Mapa.</span></label><button class="action tool" type="submit" id="leadSubmit">Abrir meu Mapa →</button><p class="form-status" id="leadStatus" role="status" aria-live="polite"></p><p class="privacy-note">Não pedimos diagnóstico, medicação, nome de familiares nem relato aberto nesta etapa. Trabalhamos apenas com categorias de navegação.</p></form><aside class="capture-summary"><b>SEU TERRITÓRIO</b><h3 id="captureRoute"></h3><p>Suas três respostas serão usadas apenas para montar uma direção inicial mais pertinente. Não há score, nível de gravidade ou classificação clínica.</p></aside></div>
     </div>
     <div data-screen="result" hidden></div>
     <div data-screen="safety" hidden></div>
@@ -270,7 +270,7 @@ body[data-map-stage="capture"] .field input{background:var(--paper);border:1px s
 <footer class="footer"><span class="footer-signature">Alguém para quando ninguém sabe o próximo passo.</span><a href="https://www.instagram.com/colapsei.eagora/" target="_blank" rel="noopener noreferrer">Instagram @colapsei.eagora</a><a href="/privacidade">Privacidade</a><a href="/">Voltar à Home →</a></footer>
 </div>
 <script>
-const MAP_VERSION='map-v1.3.3-whatsapp-cta-consent';
+const MAP_VERSION='map-v1.4.0-consent-and-delivery';
 const routeData={
   collapsei:{
     label:'Eu colapsei', description:'Estou exausto, sobrecarregado ou sinto que não consigo continuar funcionando como antes.',
@@ -452,12 +452,13 @@ const resultModules={
   }
 };
 
-const state={route:null,qIndex:0,answers:[],lead:null,safety:null};
+const state={route:null,qIndex:0,answers:[],lead:null,safety:null,formOpenedAt:null};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 function trackMap(event,detail={}){
   const payload={event,tool:'mapa-do-colapso',map_version:MAP_VERSION,...detail};
   window.dispatchEvent(new CustomEvent('colapsei:analytics',{detail:payload}));
   if(Array.isArray(window.dataLayer))window.dataLayer.push(payload);
+  if(typeof window.va==='function')window.va('event',{name:event,data:{tool:payload.tool,route:detail.route||''}});
 }
 function showPanel(id){$$('.panel').forEach(p=>p.classList.toggle('active',p.id===id));window.scrollTo({top:0,behavior:'instant'});}
 function showScreen(name){document.body.dataset.mapStage=name;$$('[data-screen]').forEach(s=>s.hidden=s.dataset.screen!==name);updateProgress(name);window.scrollTo({top:0,behavior:'instant'});requestAnimationFrame(()=>{const active=$(`[data-screen="${name}"]`);const target=active?.querySelector('h2,.question,button');if(target){target.tabIndex=-1;target.focus({preventScroll:true});}});}
@@ -553,7 +554,7 @@ function currentOrigin(){
   return {panel,screen:screen==='safety'?'routes':screen};
 }
 function renderPreview(){const p=personalizedResult();$('#previewTitle').innerHTML=highlightAgora(p.previewTitle);$('#previewBody').textContent=p.previewBody;$('#previewFocus').innerHTML=highlightAgora(p.previewFocus);}
-function renderCapture(){const r=routeData[state.route];$('#captureRoute').textContent=r.label;showScreen('capture');}
+function renderCapture(){const r=routeData[state.route];state.formOpenedAt=Date.now();$('#captureRoute').textContent=r.label;showScreen('capture');}
 function resultSnapshot(){
   const p=personalizedResult();
   return {
@@ -587,31 +588,54 @@ function renderResult(){
   trackMap('mapa_completed',{route:state.route,email_sent:Boolean(state.lead?.delivery?.email_sent)});
   showScreen('result');$('#restartBtn').onclick=restart;
 }
-function restart(){state.route=null;state.qIndex=0;state.answers=[];state.lead=null;state.safety=null;$('#leadForm').reset();showScreen('routes');}
+function restart(){state.route=null;state.qIndex=0;state.answers=[];state.lead=null;state.safety=null;state.formOpenedAt=null;$('#leadForm').reset();showScreen('routes');}
 function getUTM(){const p=new URLSearchParams(location.search);return {utm_source:p.get('utm_source')||'',utm_medium:p.get('utm_medium')||'',utm_campaign:p.get('utm_campaign')||''};}
-function leadPayload(){return {lead_id:(crypto.randomUUID?crypto.randomUUID():`map-${Date.now()}`),created_at:new Date().toISOString(),map_version:MAP_VERSION,name:$('#name').value.trim(),email:$('#email').value.trim(),phone:$('#phone').value.trim(),website:$('#website').value.trim(),route:state.route,answer_1:state.answers[0],answer_2:state.answers[1],answer_3:state.answers[2],result_destination:routeData[state.route].next.title,privacy_ack:true,whatsapp_contact_consent:true,privacy_version:'mapa-privacy-v1-2026-08',source:document.referrer||'direct',page_url:location.href,...getUTM(),result_snapshot:resultSnapshot()};}
+function validLeadEmail(value){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value||'').trim());}
+function validLeadPhone(value){const digits=String(value||'').replace(/\D/g,'');return /^\d{10,11}$/.test(digits)||/^55\d{10,11}$/.test(digits);}
+function validateLeadForm(){
+  const form=$('#leadForm'),email=$('#email'),phone=$('#phone');
+  email.setCustomValidity(validLeadEmail(email.value)?'':'Digite um e-mail completo, como nome@dominio.com.');
+  phone.setCustomValidity(validLeadPhone(phone.value)?'':'Digite um WhatsApp válido com DDD, como (11) 99999-9999.');
+  return form.reportValidity();
+}
+function leadPayload(){return {lead_id:(crypto.randomUUID?crypto.randomUUID():`map-${Date.now()}`),created_at:new Date().toISOString(),form_started_at:state.formOpenedAt,map_version:MAP_VERSION,name:$('#name').value.trim(),email:$('#email').value.trim(),phone:$('#phone').value.trim(),website:$('#website').value.trim(),route:state.route,answer_1:state.answers[0],answer_2:state.answers[1],answer_3:state.answers[2],result_destination:routeData[state.route].next.title,privacy_ack:$('#privacy').checked,whatsapp_contact_consent:$('#whatsappConsent').checked,privacy_version:'mapa-privacy-v2-2026-08-28',source:document.referrer||'direct',page_url:location.href,...getUTM(),result_snapshot:resultSnapshot()};}
 async function onLeadSubmit(e){
-  e.preventDefault();if(!$('#leadForm').reportValidity())return;
+  e.preventDefault();if(!validateLeadForm())return;
   const btn=$('#leadSubmit'),status=$('#leadStatus');
   btn.disabled=true;btn.textContent='Abrindo seu Mapa…';status.className='form-status';status.textContent='Salvando sua sessão e preparando seu Mapa.';
   state.lead=leadPayload();
+  let openResult=false;
   try{
     const response=await fetch('/api/mapa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state.lead)});
     const data=await response.json().catch(()=>({}));
-    if(!response.ok) throw new Error(data.error||'Não foi possível confirmar o envio.');
+    if(!response.ok){const error=new Error(data.error||'Não foi possível confirmar o envio.');error.status=response.status;error.fields=Array.isArray(data.fields)?data.fields:[];throw error;}
     state.lead.delivery=data;
     status.textContent='Pronto. Abrindo seu Mapa.';
+    openResult=true;
   }catch(error){
-    state.lead.delivery={saved:false,email_sent:false,error:String(error?.message||error)};
-    status.className='form-status error';status.textContent='Seu resultado será aberto normalmente. O envio por e-mail ainda não pôde ser confirmado.';
+    const editableFields=error?.status===400?error.fields.filter(field=>['name','email','phone'].includes(field)):[];
+    if(editableFields.length){
+      state.lead=null;
+      const messages={name:'Confira o seu nome.',email:'Confira o e-mail completo — por exemplo, nome@dominio.com.',phone:'Confira o WhatsApp com DDD — por exemplo, (11) 99999-9999.'};
+      status.className='form-status error';status.textContent=editableFields.map(field=>messages[field]).join(' ');
+      const first=$(`#${editableFields[0]}`);first?.focus({preventScroll:true});
+    }else{
+      state.lead.delivery={saved:false,email_sent:false,error:String(error?.message||error)};
+      status.className='form-status error';status.textContent='Seu resultado será aberto normalmente. O envio por e-mail ainda não pôde ser confirmado.';
+      openResult=true;
+    }
   }finally{
-    window.__lastLead=Object.freeze({...state.lead});
-    renderResult();btn.disabled=false;btn.textContent='Abrir meu Mapa →';
+    if(openResult){window.__lastLead=Object.freeze({...state.lead});renderResult();}
+    btn.disabled=false;btn.textContent='Abrir meu Mapa →';
   }
 }
 $('#startBtn').onclick=()=>{trackMap('mapa_started');showPanel('flowPanel');showScreen('routes');};$('#questionBack').onclick=goQuestionBack;$('#questionNext').onclick=goQuestionNext;$('#previewBack').onclick=()=>{state.qIndex=2;showScreen('question');renderQuestion();};$('#previewNext').onclick=renderCapture;$('#leadForm').addEventListener('submit',onLeadSubmit);$('#helpBtn').onclick=()=>openSafety(state.route ? (routeData[state.route]?.risk?.variant||'neutro') : 'neutro',currentOrigin());renderRoutes();
+$('#email').addEventListener('input',event=>event.currentTarget.setCustomValidity(''));$('#phone').addEventListener('input',event=>event.currentTarget.setCustomValidity(''));
 
 window.__MAP_STATE=state;window.__MAP_DATA=routeData;
 </script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};window.si=window.si||function(){(window.siq=window.siq||[]).push(arguments)};</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>

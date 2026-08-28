@@ -24,26 +24,21 @@ Copie `.env.example` para `.env.local` e preencha as variáveis somente no ambie
 
 O aviso operacional não inclui as respostas pessoais. O telefone só é aceito com consentimento explícito para contato via WhatsApp.
 
-## Livro e Stripe
+## Livro e Kiwify
 
-- `POST /api/book-checkout`: cria uma Checkout Session hospedada pela Stripe.
-- `POST /api/book-webhook`: confirma o pagamento e dispara a entrega idempotente.
-- `GET /api/book-access`: consulta uma sessão paga e emite um link protegido.
-- `GET /api/book-download`: revalida o pagamento e redireciona para um link curto do Supabase Storage.
-
-O bucket do livro deve ser privado. O webhook deve ouvir `checkout.session.completed` e `checkout.session.async_payment_succeeded` em `/api/book-webhook`.
+O botão de compra aponta diretamente para o checkout hospedado pela Kiwify. No desktop ele abre uma nova aba; no celular, continua na mesma aba. Parâmetros UTM da visita são preservados no endereço do checkout.
 
 ## Banco
 
-Execute `supabase/schema.sql` no SQL Editor do projeto Supabase. Ele é idempotente e cria as tabelas do Mapa e dos pedidos do livro.
+Execute `supabase/schema.sql` no SQL Editor do projeto Supabase. Ele é idempotente e cria as tabelas necessárias ao Mapa.
 
 ## Critério de lançamento
 
 - domínio correto e variação `www` respondendo com HTTPS;
 - um lead real de QA confirmado no Supabase e nas duas caixas de e-mail;
 - link de WhatsApp do aviso abrindo a conversa correta;
-- Stripe com `charges_enabled: true`;
-- compra real de QA confirmada, e-mail recebido e PDF baixado;
+- checkout da Kiwify abrindo corretamente em desktop e celular;
+- compra real de QA confirmada e instruções recebidas no e-mail informado;
 - Home, Mapa e compra validados em desktop e celular.
 
 O produto não diagnostica, não prescreve e não substitui profissionais habilitados ou serviços de emergência.

@@ -30,9 +30,9 @@
   "@context":"https://schema.org",
   "@graph":[
     {"@type":"WebSite","@id":"https://colapseieagora.com.br/#website","url":"https://colapseieagora.com.br/","name":"Colapsei. E Agora?","inLanguage":"pt-BR","publisher":{"@id":"https://colapseieagora.com.br/#organization"}},
-    {"@type":"Organization","@id":"https://colapseieagora.com.br/#organization","name":"Colapsei. E Agora?","url":"https://colapseieagora.com.br/","logo":"https://colapseieagora.com.br/assets/colapsei-logo.png","taxID":"54.705.479/0001-90","sameAs":["https://www.instagram.com/colapsei.eagora/"],"founder":{"@id":"https://colapseieagora.com.br/#dulce"}},
+    {"@type":"Organization","@id":"https://colapseieagora.com.br/#organization","name":"Colapsei. E Agora?","url":"https://colapseieagora.com.br/","logo":"https://colapseieagora.com.br/assets/colapsei-logo.webp","taxID":"54.705.479/0001-90","sameAs":["https://www.instagram.com/colapsei.eagora/"],"founder":{"@id":"https://colapseieagora.com.br/#dulce"}},
     {"@type":"Person","@id":"https://colapseieagora.com.br/#dulce","name":"Dulce Telles","url":"https://colapseieagora.com.br/sobre","sameAs":["https://www.instagram.com/colapsei.eagora/"]},
-    {"@type":["Book","Product"],"@id":"https://colapseieagora.com.br/livro#book","name":"Burnoutei, e agora?","author":{"@id":"https://colapseieagora.com.br/#dulce"},"inLanguage":"pt-BR","bookFormat":"https://schema.org/EBook","numberOfPages":140,"image":"https://colapseieagora.com.br/assets/burnoutei-capa.png","description":"O livro que deu origem ao Colapsei. E Agora? Uma história real sobre hiperfuncionalidade, burnout e reconstrução.","offers":{"@type":"Offer","url":"https://colapseieagora.com.br/livro","priceCurrency":"BRL","price":"19.90","availability":"https://schema.org/InStock"}}
+    {"@type":["Book","Product"],"@id":"https://colapseieagora.com.br/livro#book","name":"Burnoutei, e agora?","author":{"@id":"https://colapseieagora.com.br/#dulce"},"inLanguage":"pt-BR","bookFormat":"https://schema.org/EBook","numberOfPages":140,"image":"https://colapseieagora.com.br/assets/burnoutei-capa.webp","description":"O livro que deu origem ao Colapsei. E Agora? Uma história real sobre hiperfuncionalidade, burnout e reconstrução.","offers":{"@type":"Offer","url":"https://colapseieagora.com.br/livro","priceCurrency":"BRL","price":"19.90","availability":"https://schema.org/InStock"}}
   ]
 }
 </script>
@@ -172,7 +172,7 @@ h1,h2,h3,p{margin-top:0}
 .internal-hero{min-height:78vh;padding:150px 6vw 70px;display:flex;flex-direction:column;justify-content:flex-end}
 .internal-hero h1{font-size:clamp(4.4rem,8vw,9rem);max-width:1200px;margin-bottom:28px}
 .internal-hero p{font-size:clamp(1.1rem,1.8vw,1.5rem);line-height:1.55;max-width:720px;color:var(--graphite)}
-.lime-hero{background:var(--lime)}.cedar-hero{background:var(--cedar);color:var(--paper)}.cedar-hero p,.purple-hero p,.charcoal-hero p{color:rgba(251,239,216,.72)}.charcoal-hero{background:var(--charcoal);color:var(--paper)}.purple-hero{background:var(--purple);color:var(--paper)}.paper-hero{background:var(--sand)}.orange-hero{background:var(--orange)}
+.lime-hero{background:var(--lime)}.cedar-hero{background:var(--cedar);color:var(--paper)}.cedar-hero p,.purple-hero p,.charcoal-hero p{color:rgba(251,239,216,.72)}.charcoal-hero{background:var(--charcoal);color:var(--paper)}.purple-hero{background:var(--purple);color:var(--paper)}.paper-hero{background:var(--sand)}.orange-hero{background:var(--orange)}.orange-hero .section-label,.orange-hero p{color:var(--charcoal)}
 .map-tool{background:var(--paper)}
 .map-progress{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:46px;font-size:11px;letter-spacing:.1em}.map-progress span{opacity:.35}.map-progress .active{opacity:1;border-bottom:4px solid var(--orange);padding-bottom:14px;margin-bottom:-19px}
 .map-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.map-choice-grid button{border:1px solid var(--charcoal);background:transparent;text-align:left;padding:24px;cursor:pointer;min-height:170px;display:grid;grid-template-columns:42px 1fr;transition:transform .25s,background .25s}.map-choice-grid button:last-child{grid-column:1/-1}.map-choice-grid button:hover,.map-choice-grid button.selected{background:var(--yellow);transform:translateY(-4px)}.map-choice-grid button:nth-child(2):hover,.map-choice-grid button:nth-child(2).selected{background:var(--pink)}.map-choice-grid button:nth-child(3):hover,.map-choice-grid button:nth-child(3).selected{background:var(--orange)}.map-choice-grid button:nth-child(4):hover,.map-choice-grid button:nth-child(4).selected{background:var(--lime)}.map-choice-grid span{font-size:10px}.map-choice-grid b{font-family:Newsreader,serif;font-size:30px;font-weight:500}.map-choice-grid small{grid-column:2;margin-top:8px;color:var(--graphite);line-height:1.5}
@@ -610,7 +610,7 @@ body.menu-open{overflow:hidden}
   box-shadow:14px 14px 0 rgba(255,212,0,.82);border-color:rgba(251,239,216,.82);padding-left:112px}
 .leaders-bridge:before{content:"";position:absolute;left:74px;top:0;bottom:0;width:1px;background:rgba(251,239,216,.18)}
 .leaders-bridge>div:not(.leader-orbit),.leaders-bridge>p,.leaders-bridge>a{position:relative;z-index:2}
-.leaders-bridge>div>span{color:var(--pink)}
+.leaders-bridge>div>span{color:var(--yellow)}
 .leaders-bridge .button{background:var(--lime);color:var(--charcoal);border:1px solid var(--charcoal)}
 .leader-orbit{position:absolute;left:26px;top:50%;width:56px;height:56px;transform:translateY(-50%);display:grid;place-items:center;z-index:1}
 .leader-orbit i{position:absolute;inset:4px;border:2px solid var(--yellow);border-radius:48% 52% 46% 54%;transform:rotate(-12deg)}
@@ -1432,6 +1432,7 @@ body:not([data-route="home"]) .site-header{background:rgba(251,239,216,.94);back
 .book-cover-real{display:block;width:min(390px,86%);height:auto;position:relative;z-index:2;box-shadow:24px 28px 0 var(--purple);transform:rotate(-2deg)}
 .book-detail-cover{display:block;width:min(470px,100%);height:auto;box-shadow:26px 30px 0 var(--purple);transform:rotate(-2deg)}
 .book-buy-panel{display:grid;align-items:start}
+.book-fit-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);margin-top:48px}.book-fit-card{background:var(--paper);padding:30px}.book-fit-card h3{font-family:Newsreader,serif;font-size:32px;font-weight:500;margin:12px 0}.book-fit-card p,.book-fit-card li{font-size:14px;line-height:1.65;color:var(--graphite)}.book-fit-card ul{display:grid;gap:10px;padding-left:18px}
 .book-origin{font-family:Newsreader,serif;font-size:clamp(1.45rem,2.1vw,2.2rem)!important;line-height:1.25!important;color:var(--charcoal)!important;margin-bottom:16px!important}
 .book-price{display:flex;align-items:flex-end;gap:16px;margin:30px 0 24px;padding:22px 0;border-top:1px solid var(--charcoal);border-bottom:1px solid var(--charcoal)}
 .book-price strong{font-family:Newsreader,serif;font-size:clamp(3.6rem,6vw,6.8rem);font-weight:500;line-height:.82;letter-spacing:-.045em}
@@ -1490,6 +1491,7 @@ img{max-width:100%}
   .guide-cover h3{font-size:clamp(2.15rem,10.5vw,3rem);overflow-wrap:anywhere}
   .product-feature:after{right:-150px;bottom:-180px}
   .product-copy,.book-buy-panel{width:100%}
+  .book-fit-grid{grid-template-columns:1fr}
   .tools-v3-head,.tool-landing-grid,.next-tools-grid{grid-template-columns:minmax(0,1fr)}
   .next-tool{min-height:0;padding:26px 22px}
   .next-tool h3{margin:42px 0 20px;font-size:clamp(2.35rem,11vw,3.3rem);overflow-wrap:anywhere}
@@ -1637,7 +1639,7 @@ img{max-width:100%}
 <div aria-hidden="true" class="noise"></div>
 <header class="site-header" id="siteHeader">
 <a aria-label="Colapsei. E Agora? — início" class="brand" href="/">
-<img alt="Colapsei. E Agora?" src="/assets/colapsei-logo.png"/>
+<img alt="Colapsei. E Agora?" src="/assets/colapsei-logo.webp"/>
 </a>
 <nav aria-label="Navegação principal" class="desktop-nav">
 <a href="/mapa">Mapa do Colapso</a>
@@ -1665,7 +1667,7 @@ img{max-width:100%}
 <a href="/livro"><span>05</span><b>Livro</b><small>Uma história que organiza linguagem</small></a>
 <a href="/evento"><span>06</span><b>Evento</b><small>O Colapsei. E Agora? ao vivo</small></a>
 <a href="/sobre"><span>07</span><b>Sobre</b><small>A história e os limites da marca</small></a>
-<a href="/contato"><span>08</span><b>Contato</b><small>Conversa direta com a Dulce</small></a>
+<a href="/contato"><span>08</span><b>Contato</b><small>WhatsApp, parcerias e suporte</small></a>
 </div>
 <div aria-label="Outras áreas" class="menu-secondary">
 <span>CONTATO</span>
@@ -1834,7 +1836,7 @@ img{max-width:100%}
 <div class="product-visual">
 <div class="guide-cover vivid-cover">
 <span>GUIA DE NAVEGAÇÃO</span>
-<h3>Preciso internar alguém que amo.<br/>E agora?</h3>
+<h3>Uma possível internação entrou no radar.<br/>E agora?</h3>
 <div class="cover-route"><i></i><i></i><i></i><b>→</b></div>
 <small>antes · durante · alta · continuidade</small>
 </div>
@@ -1843,7 +1845,7 @@ img{max-width:100%}
 <div class="section-label light">04 · NAVEGAÇÃO PERSONALIZADA</div>
 <h2>Direção para avaliar, perguntar e organizar quando a internação entra em cena.</h2>
 <p>Uma conversa estruturada para organizar cronologia, cobertura, documentos, custos, comunicação familiar, perguntas para a instituição e plano de alta. Informação boa não serve apenas para explicar. Serve para proteger decisões.</p>
-<a class="button light-button" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Preciso%20de%20uma%20consultoria%20personalizada%20para%20organizar%20uma%20situa%C3%A7%C3%A3o%20de%20interna%C3%A7%C3%A3o." rel="noopener" target="_blank">Conversar sobre meu caso</a>
+<a class="button light-button" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Preciso%20de%20uma%20navega%C3%A7%C3%A3o%20para%20organizar%20uma%20poss%C3%ADvel%20interna%C3%A7%C3%A3o." rel="noopener" target="_blank">Quero organizar esta situação</a>
 </div>
 </section>
 <section aria-labelledby="tool-showcase-title" class="section tool-showcase offer-showcase" id="caminhos">
@@ -1923,7 +1925,7 @@ img{max-width:100%}
 </section>
 <section aria-labelledby="home-book-title" class="section home-book-section">
 <div class="home-book-visual">
-<img alt="Capa do livro Burnoutei, e agora?, de Dulce Telles" class="book-cover-real" decoding="async" loading="lazy" src="/assets/burnoutei-capa.png"/>
+<img alt="Capa do livro Burnoutei, e agora?, de Dulce Telles" class="book-cover-real" decoding="async" loading="lazy" src="/assets/burnoutei-capa.webp"/>
 </div>
 <div class="home-book-copy">
 <div class="section-label">07 · LIVRO DIGITAL · DISPONÍVEL</div>
@@ -1934,14 +1936,14 @@ img{max-width:100%}
 </section>
 <section aria-labelledby="home-event-title" class="section event-home">
 <div class="event-home-copy">
-<div class="section-label light">08 · EXPERIÊNCIA AO VIVO · 2026</div>
+<div class="section-label light">08 · EXPERIÊNCIA AO VIVO</div>
 <h2 id="home-event-title">Uma conversa para sair do ruído e encontrar o próximo passo.</h2>
 <p>O primeiro encontro do <strong>Colapsei. E Agora?</strong> nasce para reunir quem colapsou, quem cuida e quem precisa reconstruir sem transformar dor em espetáculo ou resposta pronta.</p>
 <a class="button outline-light" href="/evento">Conheça o evento</a>
 </div>
 <div aria-label="Informações iniciais do evento" class="event-home-ticket">
 <div aria-hidden="true" class="isotype">?</div>
-<span>PRIMEIRA EDIÇÃO · 2026</span>
+<span>PRIMEIRA EDIÇÃO</span>
 <b>Colapsei.<br/><span class="marker-pink">E agora?</span><br/>Ao vivo.</b>
 <small>Data e formato serão anunciados. A lista prioritária recebe as informações primeiro.</small>
 <a class="button light-button" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Quero%20entrar%20na%20lista%20priorit%C3%A1ria%20do%20primeiro%20evento%20Colapsei.%20E%20Agora%3F" rel="noopener" target="_blank">Quero receber o convite</a>
@@ -1979,7 +1981,7 @@ img{max-width:100%}
 <section class="section tools-library tools-v3">
 <div class="tools-v3-head"><div><div class="section-label">OUTROS CAMINHOS DE NAVEGAÇÃO</div><h2>Situações diferentes também pedem organização personalizada.</h2></div><p>Internação, alta e divisão do cuidado têm ritmos próprios, mas compartilham a mesma necessidade: tornar visíveis informações, responsabilidades e próximos passos.</p></div>
 <div class="next-tools-grid is-three">
-<article class="next-tool next-tool-yellow"><span>02 · NAVEGAÇÃO PERSONALIZADA</span><h3>Preciso internar alguém que amo. E agora?</h3><p>Cronologia, perguntas, cobertura, documentos, instituições, comunicação familiar e continuidade diante de uma possível internação.</p><a href="/navegacoes/internacao">Conhecer esta navegação →</a></article>
+<article class="next-tool next-tool-yellow"><span>02 · NAVEGAÇÃO PERSONALIZADA</span><h3>Uma possível internação entrou no radar. E agora?</h3><p>Cronologia, perguntas, cobertura, documentos, instituições, comunicação familiar e continuidade diante de uma possível internação.</p><a href="/navegacoes/internacao">Conhecer esta navegação →</a></article>
 <article class="next-tool next-tool-orange"><span>03 · NAVEGAÇÃO PERSONALIZADA</span><h3>Plano de alta. E agora?</h3><p>Responsáveis, rotina, orientações da equipe, consultas, sinais a observar, comunicação e continuidade depois da saída.</p><a href="/navegacoes/plano-de-alta">Conhecer esta navegação →</a></article>
 <article class="next-tool next-tool-pink"><span>04 · NAVEGAÇÃO PERSONALIZADA</span><h3>Como dividir o cuidado sem desaparecer.</h3><p>Tarefas, responsáveis, limites, comunicação familiar e formas de evitar que toda a infraestrutura do cuidado recaia sobre uma única pessoa.</p><a href="/navegacoes/divisao-do-cuidado">Conhecer esta navegação →</a></article>
 </div>
@@ -1989,12 +1991,12 @@ img{max-width:100%}
 <section class="page" data-page="ferramenta-internacao">
 <section class="internal-hero tool-landing-hero tool-landing-yellow">
 <div class="section-label">NAVEGAÇÃO PARA UMA POSSÍVEL INTERNAÇÃO</div>
-<h1>Preciso internar alguém que amo. <span class="nowrap">E agora?</span></h1>
+<h1>Uma possível internação entrou no radar. <span class="nowrap">E agora?</span></h1>
 <p>Uma conversa estruturada para organizar o que avaliar, perguntar e decidir antes, durante e depois de uma internação.</p>
 </section>
 <section class="section tool-landing-grid">
 <div class="tool-landing-copy"><div class="section-label">O QUE A NAVEGAÇÃO ORGANIZA</div><h2>Menos improviso justamente quando tudo parece urgente.</h2><p>Cronologia, profissionais, cobertura, instituições, documentos, custos, comunicação familiar, acompanhamento e plano de alta reunidos em uma sequência prática.</p><ul class="check-list"><li>Roteiro de cronologia</li><li>Perguntas para profissionais e instituições</li><li>Checklist de cobertura, documentos e custos</li><li>Critérios para comparar alternativas</li><li>Organização da família durante a internação</li><li>Plano de alta e continuidade</li></ul></div>
-<div class="capture-form tool-access-card"><span>CONVERSA DIRETA COM A DULCE</span><h3>Vamos organizar seu caso por onde ele começa.</h3><p>Conte brevemente a situação pelo WhatsApp. A Dulce responde com o formato e o próximo passo da navegação.</p><div><a class="button primary" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Preciso%20de%20uma%20consultoria%20personalizada%20para%20organizar%20uma%20situa%C3%A7%C3%A3o%20de%20interna%C3%A7%C3%A3o." rel="noopener" target="_blank">Conversar sobre meu caso</a></div><small>Não realiza diagnóstico e não substitui avaliação profissional.</small></div>
+<div class="capture-form tool-access-card"><span>NAVEGAÇÃO PELO WHATSAPP</span><h3>Vamos organizar esta situação por onde ela começa.</h3><p>Conte brevemente a situação pelo WhatsApp. A Dulce responde com o formato e o próximo passo da navegação.</p><div><a class="button primary" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Preciso%20de%20uma%20navega%C3%A7%C3%A3o%20para%20organizar%20uma%20poss%C3%ADvel%20interna%C3%A7%C3%A3o." rel="noopener" target="_blank">Quero organizar esta transição</a></div><small>Não realiza diagnóstico e não substitui avaliação profissional.</small></div>
 </section>
 </section>
 <!-- NAVEGAÇÃO: PLANO DE ALTA -->
@@ -2006,7 +2008,7 @@ img{max-width:100%}
 </section>
 <section class="section tool-landing-grid">
 <div class="tool-landing-copy"><div class="section-label">O QUE A NAVEGAÇÃO ORGANIZA</div><h2>A alta pode ser o momento em que a família fica mais sozinha.</h2><p>A navegação reúne responsabilidades, rotina, orientações recebidas da equipe, consultas, sinais a observar, comunicação, limites e próximos passos.</p><ul class="check-list"><li>Perguntas essenciais antes da alta</li><li>Responsáveis e tarefas</li><li>Rotina e continuidade do cuidado</li><li>Consultas e retornos</li><li>Sinais e informações a acompanhar</li><li>Plano de comunicação familiar</li></ul></div>
-<div class="capture-form tool-access-card"><span>CONVERSA DIRETA COM A DULCE</span><h3>Vamos transformar orientações em um plano possível.</h3><p>Conte brevemente o momento da alta pelo WhatsApp. A Dulce responde com o formato e o próximo passo da navegação.</p><div><a class="button primary" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Preciso%20de%20uma%20consultoria%20personalizada%20para%20organizar%20um%20plano%20de%20alta." rel="noopener" target="_blank">Conversar sobre meu caso</a></div><small>Não prescreve condutas e não substitui a equipe responsável.</small></div>
+<div class="capture-form tool-access-card"><span>NAVEGAÇÃO PELO WHATSAPP</span><h3>Vamos transformar orientações em um plano possível.</h3><p>Conte brevemente o momento da alta pelo WhatsApp. A Dulce responde com o formato e o próximo passo da navegação.</p><div><a class="button primary" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Preciso%20de%20uma%20navega%C3%A7%C3%A3o%20para%20organizar%20um%20plano%20de%20alta." rel="noopener" target="_blank">Quero organizar o cuidado</a></div><small>Não prescreve condutas e não substitui a equipe responsável.</small></div>
 </section>
 </section>
 <!-- NAVEGAÇÃO: DIVISÃO DO CUIDADO -->
@@ -2018,7 +2020,7 @@ img{max-width:100%}
 </section>
 <section class="section tool-landing-grid">
 <div class="tool-landing-copy"><div class="section-label">O QUE A NAVEGAÇÃO ORGANIZA</div><h2>Cuidar não exige que você vire o lugar inteiro onde o cuidado acontece.</h2><p>Mapeie tarefas, responsáveis, limites, comunicação, disponibilidade e pontos de sobrecarga para construir uma divisão mais realista.</p><ul class="check-list"><li>Mapa de tarefas visíveis e invisíveis</li><li>Responsáveis principais e substitutos</li><li>Limites de tempo e disponibilidade</li><li>Roteiro de conversa familiar</li><li>Pontos críticos de sobrecarga</li><li>Plano mínimo de continuidade</li></ul></div>
-<div class="capture-form tool-access-card"><span>CONVERSA DIRETA COM A DULCE</span><h3>Vamos tornar o cuidado visível e divisível.</h3><p>Conte brevemente como as responsabilidades estão distribuídas. A Dulce responde com o formato e o próximo passo da navegação.</p><div><a class="button primary" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Preciso%20de%20uma%20consultoria%20personalizada%20para%20organizar%20a%20divis%C3%A3o%20do%20cuidado." rel="noopener" target="_blank">Conversar sobre meu caso</a></div><small>Não substitui orientação clínica ou jurídica.</small></div>
+<div class="capture-form tool-access-card"><span>NAVEGAÇÃO PELO WHATSAPP</span><h3>Vamos tornar o cuidado visível e divisível.</h3><p>Conte brevemente como as responsabilidades estão distribuídas. A Dulce responde com o formato e o próximo passo da navegação.</p><div><a class="button primary" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Preciso%20de%20uma%20navega%C3%A7%C3%A3o%20para%20organizar%20a%20divis%C3%A3o%20do%20cuidado." rel="noopener" target="_blank">Conversar sobre meu caso</a></div><small>Não substitui orientação clínica ou jurídica.</small></div>
 </section>
 </section>
 <!-- EMPRESAS -->
@@ -2072,8 +2074,8 @@ img{max-width:100%}
 <section class="page" data-page="livro">
 <section class="internal-hero orange-hero"><div class="section-label">LIVRO DIGITAL · DISPONÍVEL</div><h1>Burnoutei, e agora?</h1><p>O livro que deu origem ao Colapsei. E Agora? Uma história real sobre hiperfuncionalidade, burnout e a reconstrução que começou depois do colapso.</p></section>
 <section class="section book-layout">
-<img alt="Capa do livro Burnoutei, e agora?, de Dulce Telles" class="book-detail-cover" decoding="async" src="/assets/burnoutei-capa.png"/>
-<div class="book-buy-panel"><div class="section-label">LIVRO DIGITAL · DULCE TELLES</div><h2>Antes de existir uma marca, existiu uma travessia.</h2><p class="book-origin">Este é o livro que deu origem ao universo Colapsei. E Agora?</p><p>Uma leitura direta e humana para quem passou tempo demais dando conta de tudo, para quem colapsou e para quem está tentando reconstruir o próprio lugar.</p><div class="book-price"><strong>R$ 19,90</strong><span>pagamento único<br/>PDF · 140 páginas</span></div><ul class="book-includes"><li>Pagamento seguro por cartão pela Stripe</li><li>Acesso liberado após a confirmação do pagamento</li><li>Arquivo digital enviado para o e-mail informado</li></ul><div class="book-buy-actions"><a class="button primary" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Quero%20comprar%20o%20livro%20%22Burnoutei%2C%20e%20agora%3F%22%20por%20R%24%2019%2C90." id="bookBuyButton" rel="noopener">Comprar agora · R$ 19,90</a><small>Ao comprar, você concorda com as <a href="/condicoes-de-compra">Condições de Compra</a> e com a <a href="/privacidade">Política de Privacidade</a>.</small><p aria-live="polite" class="book-checkout-status" id="bookCheckoutStatus" role="status">Pagamento seguro pela Stripe. O PDF é liberado após a confirmação e também enviado por e-mail.</p></div></div>
+<img alt="Capa do livro Burnoutei, e agora?, de Dulce Telles" class="book-detail-cover" decoding="async" src="/assets/burnoutei-capa.webp"/>
+<div class="book-buy-panel"><div class="section-label">LIVRO DIGITAL · DULCE TELLES</div><h2>Antes de existir uma marca, existiu uma travessia.</h2><p class="book-origin">Este é o livro que deu origem ao universo Colapsei. E Agora?</p><p>Uma leitura direta e humana para quem passou tempo demais dando conta de tudo, para quem colapsou e para quem está tentando reconstruir o próprio lugar.</p><div class="book-price"><strong>R$ 19,90</strong><span>pagamento único<br/>PDF · 140 páginas</span></div><ul class="book-includes"><li>Pagamento seguro processado pela Kiwify</li><li>Pagamento único de R$ 19,90</li><li>Instruções de acesso enviadas ao e-mail informado</li></ul><div class="book-buy-actions"><a class="button primary" href="https://pay.kiwify.com.br/FMBFGL4" id="bookBuyButton" rel="noopener external">Comprar agora · R$ 19,90</a><small>Ao comprar, você concorda com as <a href="/condicoes-de-compra">Condições de Compra</a> e com a <a href="/privacidade">Política de Privacidade</a>.</small><p aria-live="polite" class="book-checkout-status" id="bookCheckoutStatus" role="status">Pagamento seguro processado pela Kiwify. Após a confirmação, as instruções de acesso chegam ao e-mail informado na compra.</p></div></div>
 </section>
 </section>
 <!-- CONDIÇÕES DE COMPRA -->
@@ -2081,8 +2083,8 @@ img{max-width:100%}
 <section class="internal-hero paper-hero"><div class="section-label">COMÉRCIO ELETRÔNICO · TRANSPARÊNCIA</div><h1>Condições de Compra.</h1><p>As informações essenciais sobre pagamento, entrega, uso do arquivo, suporte e direito de arrependimento do livro digital.</p></section>
 <section class="section terms-copy">
 <article><span>01</span><div><h2>Produto e fornecedor</h2><p>O produto é o livro digital <strong>Burnoutei, e agora?</strong>, de autoria de Dulce Telles, em arquivo PDF com 140 páginas. O fornecimento é realizado por Dulce Telles, responsável pelo projeto Colapsei. E Agora?, por meio deste site. <strong>CNPJ 54.705.479/0001-90.</strong></p></div></article>
-<article><span>02</span><div><h2>Preço e pagamento</h2><p>O preço é de R$ 19,90, em pagamento único. O checkout seguro da Stripe aceita cartão. O site não acessa os dados completos do cartão nem as credenciais bancárias do comprador.</p></div></article>
-<article><span>03</span><div><h2>Entrega digital</h2><p>Após a confirmação do pagamento, o arquivo PDF é liberado por um link individual na página de confirmação e enviado ao e-mail informado. O acesso ao link protegido permanece disponível por 7 dias. Depois de baixar, o comprador deve guardar sua cópia. Em caso de falha, o suporte pode gerar um novo acesso após confirmar a compra.</p></div></article>
+<article><span>02</span><div><h2>Preço e pagamento</h2><p>O preço é de R$ 19,90, em pagamento único. O pagamento é processado no checkout seguro da Kiwify, que apresenta as formas disponíveis no momento da compra. O site não acessa os dados completos do cartão nem as credenciais bancárias do comprador.</p></div></article>
+<article><span>03</span><div><h2>Entrega digital</h2><p>Após a confirmação do pagamento, a Kiwify envia as instruções de acesso ao livro digital para o e-mail informado no checkout. O comprador deve manter esse endereço correto e guardar sua cópia. Em caso de falha na entrega ou no acesso, o suporte pode orientar um novo acesso após confirmar a compra.</p></div></article>
 <article><span>04</span><div><h2>Direito de arrependimento</h2><p>O comprador pode solicitar o cancelamento em até 7 dias contados da compra, conforme o artigo 49 do Código de Defesa do Consumidor. A solicitação pode ser feita pelo canal oficial de WhatsApp. Quando cabível, o reembolso será processado pelo mesmo meio de pagamento.</p></div></article>
 <article><span>05</span><div><h2>Licença de uso</h2><p>A compra concede uma licença pessoal, individual e não transferível. Não é permitido compartilhar, revender, reproduzir, publicar ou disponibilizar o arquivo, integral ou parcialmente, sem autorização expressa da autora. Os direitos autorais permanecem com Dulce Telles.</p></div></article>
 <article><span>06</span><div><h2>Natureza do conteúdo</h2><p>O livro apresenta uma experiência pessoal e reflexões da autora. Não constitui diagnóstico, prescrição, psicoterapia, orientação médica ou atendimento de emergência e não substitui profissionais habilitados.</p></div></article>
@@ -2092,7 +2094,7 @@ img{max-width:100%}
 <!-- EVENTO -->
 <section class="page event-page" data-page="evento">
 <section class="internal-hero purple-hero">
-<div class="section-label light">COLAPSEI. E AGORA? · AO VIVO · 2026</div>
+<div class="section-label light">COLAPSEI. E AGORA? · AO VIVO</div>
 <h1>Uma experiência para transformar caos em clareza <span class="no-word-break">compartilhada.</span></h1>
 <p>Um encontro para reconhecer o que saiu do eixo, separar urgência de ruído e construir um próximo passo possível sem fórmula, diagnóstico ou positividade tóxica.</p>
 </section>
@@ -2101,7 +2103,7 @@ img{max-width:100%}
 <div class="section-label">A PRIMEIRA EDIÇÃO</div>
 <h2>Não será uma palestra sobre dar conta. Será um espaço para reorganizar o que ninguém ensinou a atravessar.</h2>
 <p>O evento conecta experiência vivida, linguagem, ferramentas de navegação e conversas que ajudam a tornar o cenário mais compreensível. Para quem colapsou, para quem cuida e para quem está tentando reconstruir o próprio lugar.</p>
-<div class="event-facts"><span>2026</span><span>Primeira edição</span><span>Data em definição</span><span>Lista prioritária</span></div>
+<div class="event-facts"><span>Em construção</span><span>Primeira edição</span><span>Data em definição</span><span>Lista prioritária</span></div>
 <div aria-label="Pilares da experiência" class="event-principles">
 <article><span>01</span><b>Reconhecer</b><p>Entender o que saiu do eixo sem reduzir a experiência a um rótulo.</p></article>
 <article><span>02</span><b>Localizar</b><p>Separar fatos, impactos, urgências e perguntas ainda abertas.</p></article>
@@ -2122,12 +2124,12 @@ img{max-width:100%}
 <section class="page" data-page="privacidade">
 <section class="internal-hero paper-hero"><div class="section-label">PRIVACIDADE · TRANSPARÊNCIA</div><h1>Seus dados precisam de clareza também.</h1><p>Esta página explica o que coletamos no Mapa do Colapso, por que usamos essas informações e como você pode exercer seus direitos.</p></section>
 <section class="section privacy-layout">
-<aside class="privacy-summary"><div aria-hidden="true" class="isotype">?</div><h2>O essencial.</h2><p>Usamos os dados informados para montar e entregar o Mapa, manter o histórico da sessão e conversar sobre próximos passos relacionados a ele. Não vendemos seus dados.</p><small>Última atualização<br/>13 de agosto de 2026</small></aside>
+<aside class="privacy-summary"><div aria-hidden="true" class="isotype">?</div><h2>O essencial.</h2><p>Usamos os dados informados para montar e entregar o Mapa, manter o histórico da sessão e conversar sobre próximos passos relacionados a ele. Não vendemos seus dados.</p><small>Última atualização<br/>26 de agosto de 2026</small></aside>
 <div class="privacy-copy">
 <article><span>01</span><div><h2>Quem cuida dos dados</h2><p>O Colapsei. E Agora?, conduzido por Dulce Telles, é responsável pelas decisões sobre o tratamento dos dados coletados neste site. Dúvidas ou solicitações podem ser enviadas pelo canal oficial de WhatsApp indicado ao final desta página.</p></div></article>
 <article><span>02</span><div><h2>O que coletamos</h2><p>No Mapa, coletamos nome, e-mail, WhatsApp, rota escolhida, três respostas estruturadas, origem da visita e parâmetros de campanha quando existirem. Na compra do livro, podemos tratar nome, e-mail, identificação e situação do pagamento, diretamente no atendimento ou por meio do checkout quando ele estiver ativo. Não recebemos o número completo do cartão nem credenciais bancárias.</p></div></article>
 <article><span>03</span><div><h2>Para que usamos</h2><ul><li>Gerar, exibir e entregar o resultado do seu Mapa.</li><li>Identificar sua sessão e evitar que você precise refazer o percurso.</li><li>Entrar em contato sobre próximos passos diretamente relacionados ao Mapa, conforme o consentimento apresentado no formulário.</li><li>Proteger o funcionamento do site e entender, de forma agregada, como as pessoas chegam até ele.</li></ul></div></article>
-<article><span>04</span><div><h2>Com quem os dados podem ser processados</h2><p>Usamos prestadores de infraestrutura necessários para operar o serviço, incluindo Vercel para hospedagem e funções, Supabase para banco de dados e armazenamento privado, Resend para envio de e-mail e Stripe para processamento de pagamentos. Esses fornecedores processam somente o necessário para prestar seus serviços e mantêm suas próprias medidas de segurança e privacidade.</p></div></article>
+<article><span>04</span><div><h2>Com quem os dados podem ser processados</h2><p>Usamos prestadores de infraestrutura necessários para operar o serviço, incluindo Vercel para hospedagem e funções, Supabase para banco de dados e armazenamento privado, Resend para envio de e-mail e Kiwify para checkout, processamento de pagamentos e entrega digital do livro. Esses fornecedores processam somente o necessário para prestar seus serviços e mantêm suas próprias medidas de segurança e privacidade.</p></div></article>
 <article><span>05</span><div><h2>Segurança e conservação</h2><p>O navegador não acessa diretamente o banco de dados. As gravações passam por uma função protegida no servidor e os acessos operacionais são restritos. Conservamos os dados pelo tempo necessário às finalidades informadas e ao cumprimento de obrigações aplicáveis. Depois disso, eles podem ser eliminados ou anonimizados.</p></div></article>
 <article><span>06</span><div><h2>Seus direitos</h2><p>Você pode pedir confirmação do tratamento, acesso, correção, informação sobre compartilhamento, portabilidade quando aplicável, revogação do consentimento e eliminação dos dados tratados com base nele, ressalvadas hipóteses legais de conservação.</p></div></article>
 <article><span>07</span><div><h2>Contato e limites</h2><p>Para exercer seus direitos ou tirar dúvidas, fale diretamente com a Dulce pelo WhatsApp. Este canal não é clínico nem de emergência e a Política de Privacidade pode ser atualizada quando o serviço mudar.</p><a class="button primary" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Quero%20falar%20sobre%20privacidade%20e%20meus%20dados%20no%20site%20Colapsei.%20E%20Agora%3F" rel="noopener" target="_blank">Falar sobre meus dados</a></div></article>
@@ -2136,9 +2138,9 @@ img{max-width:100%}
 </section>
 <!-- CONTATO -->
 <section class="page" data-page="contato">
-<section class="internal-hero charcoal-hero"><div class="section-label light">CONTATO</div><h1>Vamos entender qual conversa precisa começar.</h1><p>O contato é direto com a Dulce e não funciona como canal de emergência ou atendimento clínico.</p></section>
+<section class="internal-hero charcoal-hero"><div class="section-label light">CONTATO</div><h1>Vamos entender qual conversa precisa começar.</h1><p>Fale com o Colapsei. E Agora? sobre navegação, empresas, parcerias, imprensa ou suporte ao livro. Este não é um canal de emergência ou atendimento clínico.</p></section>
 <section class="section contact-layout">
-<div class="contact-form"><div class="section-label">CONVERSA DIRETA</div><h2>Explique brevemente o que você precisa organizar.</h2><p>Você será direcionado ao WhatsApp com uma mensagem inicial. Nenhuma informação desta página é enviada automaticamente.</p><a class="button primary" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Vim%20pelo%20site%20do%20Colapsei.%20E%20Agora%3F%20e%20quero%20conversar%20sobre%3A%20" rel="noopener" target="_blank">Iniciar conversa pelo WhatsApp</a></div>
+<div class="contact-form"><div class="section-label">COMECE UMA CONVERSA</div><h2>Conte brevemente o que você precisa organizar.</h2><p>Você será direcionado ao WhatsApp da Dulce com uma mensagem inicial. Nenhuma informação desta página é enviada automaticamente.</p><a class="button primary" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Vim%20pelo%20site%20do%20Colapsei.%20E%20Agora%3F%20e%20quero%20conversar%20sobre%3A%20" rel="noopener" target="_blank">Iniciar conversa pelo WhatsApp</a></div>
 <aside class="contact-aside"><div class="section-label">IMPORTANTE</div><h2>Este canal não substitui atendimento de emergência.</h2><p>Em situação de risco imediato ou emergência, acione o SAMU pelo <strong>192</strong>. Para apoio emocional gratuito, o CVV atende pelo <strong>188</strong>.</p><div class="contact-options"><span>EMPRESAS</span><b>Palestras, programas e navegação</b><span>PARCEIROS</span><b>Profissionais e instituições</b><span>IMPRENSA</span><b>Entrevistas e pautas</b></div></aside>
 </section>
 </section>
@@ -2157,7 +2159,7 @@ img{max-width:100%}
 <div class="footer-conversion-actions"><a class="button primary" href="/mapa">Fazer meu Mapa</a><a class="button secondary" href="/livro">Conhecer o livro</a></div>
 </section>
 <footer class="site-footer site-footer-v17">
-<div class="footer-column footer-brand-v17"><img alt="Colapsei. E Agora?" decoding="async" loading="lazy" src="/assets/colapsei-logo.png"/><strong>Alguém para quando ninguém sabe o próximo passo.</strong><small>NAVEGAÇÃO EM SAÚDE MENTAL</small></div>
+<div class="footer-column footer-brand-v17"><img alt="Colapsei. E Agora?" decoding="async" loading="lazy" src="/assets/colapsei-logo.webp"/><strong>Alguém para quando ninguém sabe o próximo passo.</strong><small>NAVEGAÇÃO EM SAÚDE MENTAL</small></div>
 <nav aria-label="Explore o site" class="footer-column"><span class="footer-column-title">EXPLORE</span><a href="/mapa">Mapa do Colapso</a><a href="/navegacoes">Navegações</a><a href="/empresas">Empresas</a><a href="/livro">Livro</a><a href="/evento">Evento</a><a href="/sobre">Sobre</a></nav>
 <div aria-label="Canais oficiais da marca" class="footer-column"><span class="footer-column-title">COMECE UMA CONVERSA</span><a class="footer-contact-button" href="https://wa.me/5511983095381?text=Oi%2C%20Dulce.%20Vim%20pelo%20site%20do%20Colapsei.%20E%20Agora%3F%20e%20quero%20conversar." rel="noopener" target="_blank">Falar pelo WhatsApp ↗</a><a href="/livro">Comprar o livro</a><a href="https://www.instagram.com/colapsei.eagora/" rel="noopener" target="_blank">Instagram · @colapsei.eagora ↗</a></div>
 <div class="footer-column footer-transparency"><span class="footer-column-title">TRANSPARÊNCIA</span><a href="/privacidade">Política de Privacidade</a><a href="/condicoes-de-compra">Condições de Compra</a><a href="/sobre">Limites de atuação</a><span class="footer-cnpj">CNPJ 54.705.479/0001-90</span></div>
@@ -2230,6 +2232,7 @@ function trackEvent(name,detail={}){
   const payload={event:`colapsei_${name}`,...detail};
   window.dispatchEvent(new CustomEvent('colapsei:analytics',{detail:payload}));
   if(Array.isArray(window.dataLayer))window.dataLayer.push(payload);
+  if(typeof window.va==='function')window.va('event',{name:payload.event,data:detail});
 }
 function updateRouteMeta(route){
   const meta=routeMeta[route]||routeMeta.home;
@@ -2362,26 +2365,27 @@ showPage(initialRoute,false);
 
 const bookBuyButton=document.getElementById('bookBuyButton');
 const bookCheckoutStatus=document.getElementById('bookCheckoutStatus');
-if(document.body.dataset.bookCheckout==='live') bookBuyButton?.addEventListener('click',async event=>{
+if(document.body.dataset.bookCheckout==='live') bookBuyButton?.addEventListener('click',event=>{
   event.preventDefault();
-  const fallback=bookBuyButton.href;
-  bookBuyButton.setAttribute('aria-disabled','true');
-  bookBuyButton.textContent='Abrindo pagamento…';
-  if(bookCheckoutStatus){bookCheckoutStatus.className='book-checkout-status';bookCheckoutStatus.textContent='Conectando ao checkout seguro.';}
-  try{
-    const response=await fetch('/api/book-checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok||!data.url) throw new Error(data.error||'Checkout indisponível.');
-    location.href=data.url;
-  }catch(error){
-    if(bookCheckoutStatus){bookCheckoutStatus.className='book-checkout-status error';bookCheckoutStatus.textContent='O checkout ainda não abriu. Vamos continuar pelo WhatsApp.';}
-    bookBuyButton.textContent='Continuar pelo WhatsApp';
-    bookBuyButton.removeAttribute('aria-disabled');
-    setTimeout(()=>{location.href=fallback;},650);
+  const destination=new URL(bookBuyButton.href);
+  const current=new URLSearchParams(location.search);
+  ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(key=>{if(current.get(key))destination.searchParams.set(key,current.get(key));});
+  if(!destination.searchParams.has('src'))destination.searchParams.set('src','site-colapsei');
+  const desktopCheckout=window.matchMedia('(min-width: 768px)').matches;
+  trackEvent('book_checkout_opened',{provider:'kiwify',device:desktopCheckout?'desktop':'mobile'});
+  if(desktopCheckout){
+    const checkoutWindow=window.open(destination.toString(),'_blank','noopener');
+    if(bookCheckoutStatus)bookCheckoutStatus.textContent='Checkout aberto em uma nova aba.';
+    if(!checkoutWindow)location.href=destination.toString();
+  }else{
+    location.href=destination.toString();
   }
 });
 
 </script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};window.si=window.si||function(){(window.siq=window.siq||[]).push(arguments)};</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
 <script>
 (function(){
   const els=[...document.querySelectorAll('.v5-reveal')];

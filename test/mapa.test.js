@@ -15,6 +15,19 @@ test('valida e-mail sem aceitar formatos incompletos', () => {
   assert.equal(_test.validEmail('pessoa exemplo@site.com'), false);
 });
 
+test('rejeita envio instantâneo e aceita tempo humano de preenchimento', () => {
+  const now = 1_800_000;
+  assert.equal(_test.validFormTiming(now - 500, now), false);
+  assert.equal(_test.validFormTiming(now - 5_000, now), true);
+  assert.equal(_test.validFormTiming(now - (2 * 60 * 60 * 1000 + 1), now), false);
+});
+
+test('aceita mesma origem e rejeita origem externa', () => {
+  const request = origin => ({ headers: { origin, host: 'colapseieagora.com.br', 'x-forwarded-proto': 'https' } });
+  assert.equal(_test.sameOriginRequest(request('https://colapseieagora.com.br')), true);
+  assert.equal(_test.sameOriginRequest(request('https://exemplo.com')), false);
+});
+
 test('snapshot limita listas e tamanho dos campos', () => {
   const result = _test.snapshot({
     title: 'T'.repeat(300),

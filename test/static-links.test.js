@@ -48,3 +48,20 @@ test('todos os links internos apontam para páginas ou arquivos existentes', () 
 
   assert.deepEqual(missing, []);
 });
+
+test('checkout do livro abre nova aba no desktop e mantém navegação no celular', () => {
+  const htmlFiles = filesIn(root).filter((file) => file.endsWith('.html'));
+  const checkoutFiles = htmlFiles.filter((file) => fs.readFileSync(file, 'utf8').includes('id="bookBuyButton"'));
+
+  assert.ok(checkoutFiles.length > 0);
+  for (const file of checkoutFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    assert.match(html, /desktopCheckout=window\.matchMedia\('\(min-width: 768px\)'\)\.matches/);
+    assert.match(html, /https:\/\/pay\.kiwify\.com\.br\/FMBFGL4/);
+    assert.match(html, /window\.open\(destination\.toString\(\),'_blank','noopener'\)/);
+    assert.match(html, /location\.href=destination\.toString\(\)/);
+    assert.match(html, /Pagamento seguro processado pela Kiwify/);
+    assert.doesNotMatch(html, /\/api\/book-checkout/);
+    assert.doesNotMatch(html, /Pagamento seguro (?:por cartão )?pela Stripe/);
+  }
+});
