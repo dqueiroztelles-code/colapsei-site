@@ -42,6 +42,11 @@ test('aviso interno respeita a autorização de WhatsApp', () => {
   assert.match(withConsent, /Abrir conversa no WhatsApp/);
 });
 
+test('Mapa exige WhatsApp e autorização de continuidade', () => {
+  assert.equal(_test.normalizePhone(''), '');
+  assert.equal(_test.normalizePhone('(11) 99999-8888'), '+5511999998888');
+});
+
 test('limite de requisições bloqueia a sexta tentativa por minuto', () => {
   const req = { headers: { 'x-forwarded-for': `203.0.113.${Date.now() % 200}` } };
   for (let index = 0; index < 5; index += 1) assert.equal(_test.isRateLimited(req, 1_000), false);

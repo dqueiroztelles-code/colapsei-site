@@ -140,8 +140,8 @@ module.exports = async function handler(req, res) {
     const invalidFields = [
       !name && 'name',
       !validEmail(email) && 'email',
-      rawPhone && !phone && 'phone',
-      whatsappConsent && !phone && 'phone',
+      !phone && 'phone',
+      !whatsappConsent && 'whatsapp_contact_consent',
       !ROUTES.has(route) && 'route',
       !privacyVersion && 'privacy_version',
       answers.some((answer) => !answer) && 'answers',

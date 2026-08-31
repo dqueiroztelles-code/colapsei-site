@@ -15,7 +15,7 @@ Copie `.env.example` para `.env.local` e preencha as variáveis somente no ambie
 
 ## Captação do Mapa
 
-`POST /api/mapa` valida nome, e-mail, WhatsApp opcional, consentimentos e respostas. Depois:
+`POST /api/mapa` valida nome, e-mail, WhatsApp obrigatório, consentimentos e respostas. Depois:
 
 1. atualiza ou cria o contato no Supabase;
 2. salva uma sessão do Mapa sem persistir o texto completo do resultado;
