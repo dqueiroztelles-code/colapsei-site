@@ -78,12 +78,18 @@ test('captação corporativa e do evento inclui e-mail, WhatsApp e consentimento
 test('públicos corporativos têm continuidade equivalente e formulário completo', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const api = fs.readFileSync(path.join(root, 'api', 'interest.js'), 'utf8');
-  assert.match(html, /href="\/navegacoes#quem-colapsou">Conhecer a navegação individual/);
-  assert.match(html, /id="para-quem-cuida"/);
-  assert.match(html, /href="\/navegacoes#para-quem-cuida">Conhecer as navegações para quem cuida/);
-  assert.match(html, /<option>Todas as opções acima<\/option>/);
-  assert.match(html, /orientação personalizada sobre como a navegação em saúde mental/);
-  assert.match(html, /<textarea[^>]+name="context"[^>]+maxlength="3000"|<textarea[^>]+maxlength="3000"[^>]+name="context"/);
+  const companyPage = html.match(/<!-- EMPRESAS -->([\s\S]*?)<!-- SOBRE -->/)[1];
+  assert.match(companyPage, /Palestra · 60 a 90 minutos/);
+  assert.match(companyPage, /Experiência completa · 2h30 a 3h/);
+  assert.match(companyPage, /Liderar sem improvisar cuidado/);
+  assert.match(companyPage, /Programa Corporativo Personalizado/);
+  assert.match(companyPage, /escolas, escritórios de advocacia, agências de publicidade, consultorias, indústrias/);
+  assert.doesNotMatch(companyPage, /\[X\]/);
+  assert.match(companyPage, /<option>Palestra para equipes · 60 a 90 minutos<\/option>/);
+  assert.match(companyPage, /<option>Experiência Colapsei\. E Agora\? · 2h30 a 3h<\/option>/);
+  assert.match(companyPage, /<option>Treinamento para RH e lideranças · 2h30 a 3h<\/option>/);
+  assert.match(companyPage, /<option>Programa Corporativo Personalizado<\/option>/);
+  assert.match(companyPage, /<textarea[^>]+name="context"[^>]+maxlength="3000"|<textarea[^>]+maxlength="3000"[^>]+name="context"/);
   assert.match(html, /context:data\.get\('context'\)\|\|''/);
   assert.match(api, /const context = clean\(body\.context, MAX\.context\)/);
   assert.match(api, /Contexto: \$\{context\}/);
@@ -126,7 +132,7 @@ test('marcadores editoriais orientam sem numeração decorativa', () => {
     'COMO FUNCIONA</span><i aria-hidden="true">·</i> MÉTODO E AGORA?',
     'NAVEGAÇÃO PERSONALIZADA · INTERNAÇÃO E CONTINUIDADE',
     'ESCOLHA SEU CAMINHO · PARA VOCÊ, FAMÍLIAS E EMPRESAS',
-    'PARA EMPRESAS · COLAPSO, CUIDADO E LIDERANÇA',
+    'PARA EMPRESAS · PALESTRAS, EXPERIÊNCIAS E PROGRAMAS',
     'QUEM CRIOU · DULCE TELLES, FUNDADORA',
     'LIVRO DIGITAL · DISPONÍVEL AGORA',
     'EVENTO PRESENCIAL · PRIMEIRA EDIÇÃO'
