@@ -83,7 +83,10 @@ test('públicos corporativos têm continuidade equivalente e formulário complet
   assert.match(companyPage, /Experiência completa · 2h30 a 3h/);
   assert.match(companyPage, /Liderar sem improvisar cuidado/);
   assert.match(companyPage, /Programa Corporativo Personalizado/);
-  assert.match(companyPage, /escolas, escritórios de advocacia, agências de publicidade, consultorias, indústrias/);
+  assert.match(companyPage, /escolas, escritórios de advocacia, agências de publicidade, consultorias, indústrias, varejo, comércio, tecnologia, saúde, serviços/);
+  for (const segment of ['ESCOLAS', 'ADVOCACIA', 'PUBLICIDADE', 'CONSULTORIAS', 'INDÚSTRIAS', 'VAREJO', 'COMÉRCIO', 'TECNOLOGIA', 'SAÚDE', 'SERVIÇOS', 'EDUCAÇÃO', 'DIVERSOS SEGMENTOS']) {
+    assert.match(companyPage, new RegExp(`<span>${segment}</span>`));
+  }
   assert.doesNotMatch(companyPage, /\[X\]/);
   assert.match(companyPage, /<option>Palestra para equipes · 60 a 90 minutos<\/option>/);
   assert.match(companyPage, /<option>Experiência Colapsei\. E Agora\? · 2h30 a 3h<\/option>/);
