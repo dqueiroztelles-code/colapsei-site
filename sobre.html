@@ -31,7 +31,7 @@
   "@graph":[
     {"@type":"WebSite","@id":"https://colapseieagora.com.br/#website","url":"https://colapseieagora.com.br/","name":"Colapsei. E Agora?","inLanguage":"pt-BR","publisher":{"@id":"https://colapseieagora.com.br/#organization"}},
     {"@type":"Organization","@id":"https://colapseieagora.com.br/#organization","name":"Colapsei. E Agora?","url":"https://colapseieagora.com.br/","logo":"https://colapseieagora.com.br/assets/colapsei-logo.png","taxID":"54.705.479/0001-90","sameAs":["https://www.instagram.com/colapsei.eagora/","https://www.youtube.com/@colapseieieagora"],"founder":{"@id":"https://colapseieagora.com.br/#dulce"}},
-    {"@type":"Person","@id":"https://colapseieagora.com.br/#dulce","name":"Dulce Telles","url":"https://colapseieagora.com.br/sobre","sameAs":["https://www.instagram.com/colapsei.eagora/"]},
+    {"@type":"Person","@id":"https://colapseieagora.com.br/#dulce","name":"Dulce Telles","url":"https://colapseieagora.com.br/sobre","sameAs":["https://www.instagram.com/colapsei.eagora/","https://www.youtube.com/@colapseieieagora"]},
     {"@type":["Book","Product"],"@id":"https://colapseieagora.com.br/livro#book","name":"Burnoutei, e agora?","author":{"@id":"https://colapseieagora.com.br/#dulce"},"inLanguage":"pt-BR","bookFormat":"https://schema.org/EBook","numberOfPages":140,"image":"https://colapseieagora.com.br/assets/burnoutei-capa.png","description":"O livro que deu origem ao Colapsei. E Agora? Uma história real sobre hiperfuncionalidade, burnout e reconstrução.","offers":{"@type":"Offer","url":"https://colapseieagora.com.br/livro","priceCurrency":"BRL","price":"19.90","availability":"https://schema.org/InStock"}}
   ]
 }
@@ -1676,8 +1676,8 @@ img{max-width:100%}
 .corporate-proof-copy h2{max-width:900px}
 .corporate-proof-copy>p{max-width:760px;font-size:17px;line-height:1.68;color:var(--graphite)}
 .corporate-proof-copy>strong{display:block;max-width:760px;margin-top:34px;font-family:Newsreader,serif;font-size:28px;line-height:1.18;font-weight:500}
-.sector-cloud{display:flex;flex-wrap:wrap;align-content:center;gap:12px;padding:36px;border:2px solid var(--charcoal);background:var(--paper);box-shadow:14px 14px 0 var(--orange);transform:rotate(1.2deg)}
-.sector-cloud span{display:inline-flex;padding:10px 13px;border:1px solid var(--charcoal);font-size:10px;line-height:1;letter-spacing:.12em;font-weight:700;background:var(--yellow)}
+.sector-cloud{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:14px;min-height:340px;padding:32px;border:2px solid var(--charcoal);background:var(--paper);box-shadow:14px 14px 0 var(--orange);transform:rotate(1.2deg)}
+.sector-cloud span{display:flex;min-width:0;align-items:center;justify-content:center;padding:16px 12px;border:1px solid var(--charcoal);font-size:10px;line-height:1.25;letter-spacing:.12em;font-weight:700;text-align:center;background:var(--yellow)}
 .sector-cloud span:nth-child(2),.sector-cloud span:nth-child(5){background:var(--pink)}
 .sector-cloud span:nth-child(3),.sector-cloud span:nth-child(6){background:var(--lime)}
 .corporate-speaker{display:grid;grid-template-columns:minmax(280px,.72fr) minmax(0,1.28fr);gap:8vw;align-items:center;background:var(--pink)}
@@ -1702,7 +1702,7 @@ img{max-width:100%}
   .leadership-program .leadership-note{font-size:20px!important}
   .offer-grid-v4{grid-template-columns:1fr}.offer-grid-v4 article{min-height:0;padding:28px 22px}.offer-grid-v4 h3{margin-top:36px}
   .corporate-outcomes-grid{grid-template-columns:1fr}.corporate-outcomes-grid article{min-height:210px}
-  .corporate-proof{gap:48px}.sector-cloud{padding:28px 22px;box-shadow:8px 8px 0 var(--orange)}
+  .corporate-proof{gap:48px}.sector-cloud{grid-template-columns:repeat(2,minmax(0,1fr));min-height:360px;padding:22px 18px;box-shadow:8px 8px 0 var(--orange)}
   .corporate-speaker{gap:48px}.corporate-speaker figure{width:calc(100% - 10px);box-shadow:9px 9px 0 var(--yellow)}
 }
 </style>

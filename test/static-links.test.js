@@ -95,6 +95,13 @@ test('públicos corporativos têm continuidade equivalente e formulário complet
   assert.match(api, /Contexto: \$\{context\}/);
 });
 
+test('quadro de segmentos ocupa toda a área disponível', () => {
+  const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert.match(html, /\.sector-cloud\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\);grid-auto-rows:1fr/);
+  assert.match(html, /\.sector-cloud span\{display:flex;min-width:0;align-items:center;justify-content:center/);
+  assert.match(html, /\.sector-cloud\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\);min-height:360px/);
+});
+
 test('links de WhatsApp têm origem e mensagem contextual', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const links = [...html.matchAll(/<a\b[^>]*href="https:\/\/wa\.me\/5511983095381[^>]*>/g)].map((match) => match[0]);
