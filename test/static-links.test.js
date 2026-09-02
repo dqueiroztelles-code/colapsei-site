@@ -124,6 +124,17 @@ test('instrumentação de experiência e campanha está presente', () => {
   assert.match(html, /url\.searchParams\.set\('src','site_livro'\)/);
 });
 
+test('canal oficial do YouTube está disponível e mensurável em todo o site', () => {
+  const htmlFiles = filesIn(root).filter((file) => file.endsWith('.html') && path.basename(file) !== '404.html');
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    assert.match(html, /https:\/\/www\.youtube\.com\/@colapseieieagora/);
+    assert.match(html, /YouTube(?: ·)? @colapseieieagora(?: ↗)?/);
+  }
+  const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert.match(home, /trackEvent\('youtube_click'/);
+});
+
 test('marcadores editoriais orientam sem numeração decorativa', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const labels = [

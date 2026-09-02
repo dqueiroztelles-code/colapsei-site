@@ -30,7 +30,7 @@
   "@context":"https://schema.org",
   "@graph":[
     {"@type":"WebSite","@id":"https://colapseieagora.com.br/#website","url":"https://colapseieagora.com.br/","name":"Colapsei. E Agora?","inLanguage":"pt-BR","publisher":{"@id":"https://colapseieagora.com.br/#organization"}},
-    {"@type":"Organization","@id":"https://colapseieagora.com.br/#organization","name":"Colapsei. E Agora?","url":"https://colapseieagora.com.br/","logo":"https://colapseieagora.com.br/assets/colapsei-logo.png","taxID":"54.705.479/0001-90","sameAs":["https://www.instagram.com/colapsei.eagora/"],"founder":{"@id":"https://colapseieagora.com.br/#dulce"}},
+    {"@type":"Organization","@id":"https://colapseieagora.com.br/#organization","name":"Colapsei. E Agora?","url":"https://colapseieagora.com.br/","logo":"https://colapseieagora.com.br/assets/colapsei-logo.png","taxID":"54.705.479/0001-90","sameAs":["https://www.instagram.com/colapsei.eagora/","https://www.youtube.com/@colapseieieagora"],"founder":{"@id":"https://colapseieagora.com.br/#dulce"}},
     {"@type":"Person","@id":"https://colapseieagora.com.br/#dulce","name":"Dulce Telles","url":"https://colapseieagora.com.br/sobre","sameAs":["https://www.instagram.com/colapsei.eagora/"]},
     {"@type":["Book","Product"],"@id":"https://colapseieagora.com.br/livro#book","name":"Burnoutei, e agora?","author":{"@id":"https://colapseieagora.com.br/#dulce"},"inLanguage":"pt-BR","bookFormat":"https://schema.org/EBook","numberOfPages":140,"image":"https://colapseieagora.com.br/assets/burnoutei-capa.png","description":"O livro que deu origem ao Colapsei. E Agora? Uma história real sobre hiperfuncionalidade, burnout e reconstrução.","offers":{"@type":"Offer","url":"https://colapseieagora.com.br/livro","priceCurrency":"BRL","price":"19.90","availability":"https://schema.org/InStock"}}
   ]
@@ -1749,6 +1749,7 @@ img{max-width:100%}
 <span>CONTATO</span>
 <a data-wa-message="Olá! Vim pelo menu do site Colapsei. E Agora? e quero entender qual caminho faz sentido para mim." data-wa-source="menu" href="https://wa.me/5511983095381" rel="noopener" target="_blank">Fale com o Colapsei. E Agora? pelo WhatsApp ↗</a>
 <a href="https://www.instagram.com/colapsei.eagora/" rel="noopener" target="_blank">Instagram · @colapsei.eagora ↗</a>
+<a href="https://www.youtube.com/@colapseieieagora" rel="noopener" target="_blank">YouTube · @colapseieieagora ↗</a>
 <a href="/privacidade">Privacidade</a>
 <a href="/condicoes-de-compra">Condições de compra</a>
 </div>
@@ -2262,7 +2263,7 @@ img{max-width:100%}
 <footer class="site-footer site-footer-v17">
 <div class="footer-column footer-brand-v17"><img alt="Colapsei. E Agora?" decoding="async" loading="lazy" src="/assets/colapsei-logo.png"/><strong>Alguém para quando ninguém sabe o próximo passo.</strong><small>NAVEGAÇÃO EM SAÚDE MENTAL</small></div>
 <nav aria-label="Explore o site" class="footer-column"><span class="footer-column-title">EXPLORE</span><a href="/mapa">Mapa do Colapso</a><a href="/navegacoes">Navegações</a><a href="/empresas">Empresas</a><a href="/livro">Livro</a><a href="/evento">Evento</a><a href="/sobre">Sobre</a></nav>
-<div aria-label="Canais oficiais da marca" class="footer-column"><span class="footer-column-title">COMECE UMA CONVERSA</span><a class="footer-contact-button" data-wa-message="Olá! Vim pelo rodapé do site Colapsei. E Agora? e quero entender qual caminho faz sentido para mim." data-wa-source="rodape" href="https://wa.me/5511983095381" rel="noopener" target="_blank">Falar pelo WhatsApp ↗</a><a href="/livro">Comprar o livro</a><a href="https://www.instagram.com/colapsei.eagora/" rel="noopener" target="_blank">Instagram · @colapsei.eagora ↗</a></div>
+<div aria-label="Canais oficiais da marca" class="footer-column"><span class="footer-column-title">COMECE UMA CONVERSA</span><a class="footer-contact-button" data-wa-message="Olá! Vim pelo rodapé do site Colapsei. E Agora? e quero entender qual caminho faz sentido para mim." data-wa-source="rodape" href="https://wa.me/5511983095381" rel="noopener" target="_blank">Falar pelo WhatsApp ↗</a><a href="/livro">Comprar o livro</a><a href="https://www.instagram.com/colapsei.eagora/" rel="noopener" target="_blank">Instagram · @colapsei.eagora ↗</a><a href="https://www.youtube.com/@colapseieieagora" rel="noopener" target="_blank">YouTube · @colapseieieagora ↗</a></div>
 <div class="footer-column footer-transparency"><span class="footer-column-title">TRANSPARÊNCIA</span><a href="/privacidade">Política de Privacidade</a><a href="/condicoes-de-compra">Condições de Compra</a><a href="/sobre">Limites de atuação</a><span class="footer-cnpj">CNPJ 54.705.479/0001-90</span></div>
 <div class="footer-base"><span>© 2026 Colapsei. E Agora? Todos os direitos reservados.</span><span><b>Emergência: SAMU 192.</b> Apoio emocional gratuito: <b>CVV 188.</b></span><span>Não realiza diagnóstico, tratamento ou atendimento de emergência.</span></div>
 </footer>
@@ -2405,6 +2406,7 @@ document.addEventListener('click',event=>{
   else if(href==='/livro')trackEvent('book_view',{label:link.textContent.trim()});
   else if(href==='/evento')trackEvent('event_interest',{label:link.textContent.trim()});
   else if(href==='/empresas')trackEvent('companies_interest',{label:link.textContent.trim()});
+  else if(href.startsWith('https://www.youtube.com/'))trackEvent('youtube_click',{label:link.textContent.trim(),source:document.body.dataset.route||'site'});
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenuPanel();});
 

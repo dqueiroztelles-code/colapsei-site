@@ -27,7 +27,11 @@ for (const relative of targets) {
   const html = fs.readFileSync(target, 'utf8');
   const targetMarkerIndex = html.indexOf(marker);
   if (targetMarkerIndex < 0) throw new Error(`Marcador <style> não encontrado em ${relative}.`);
-  fs.writeFileSync(target, `${html.slice(0, targetMarkerIndex)}${sharedShell}`);
+  const head = html.slice(0, targetMarkerIndex).replace(
+    '"sameAs":["https://www.instagram.com/colapsei.eagora/"]',
+    '"sameAs":["https://www.instagram.com/colapsei.eagora/","https://www.youtube.com/@colapseieieagora"]'
+  );
+  fs.writeFileSync(target, `${head}${sharedShell}`);
 }
 
 console.log(`Shell sincronizado em ${targets.length} páginas.`);
