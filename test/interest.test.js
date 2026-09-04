@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const { _test } = require('../api/interest');
-const { requestFingerprint } = require('../lib/lead-guard');
+const { enforceRateLimit, requestFingerprint } = require('../lib/lead-guard');
 
 test('normaliza WhatsApp e valida e-mail do lead', () => {
   assert.equal(_test.normalizePhone('(21) 98888-7777'), '+5521988887777');
@@ -36,4 +36,40 @@ test('fingerprint de limitação não guarda IP ou agente em texto aberto', () =
   const fingerprint = requestFingerprint(req, 'segredo-de-teste');
   assert.match(fingerprint, /^[a-f0-9]{64}$/);
   assert.doesNotMatch(fingerprint, /203\.0\.113\.7|Browser QA/);
+});
+
+test('falha de rede no e-mail não derruba o registro do interesse', async () => {
+  const originalError = console.error;
+  console.error = () => {};
+  try {
+    const sent = await _test.sendEmail({
+      apiKey: 'resend_test',
+      from: 'site@example.com',
+      to: 'lead@example.com',
+      subject: 'Teste',
+      html: '<p>Teste</p>',
+      idempotencyKey: 'interest-test',
+      fetchImpl: async () => { throw new Error('fetch failed'); }
+    });
+    assert.equal(sent, false);
+  } finally {
+    console.error = originalError;
+  }
+});
+
+test('falha de rede no rate limit degrada sem bloquear o formulário', async () => {
+  const originalError = console.error;
+  console.error = () => {};
+  try {
+    const result = await enforceRateLimit({
+      req: { headers: { 'x-forwarded-for': '203.0.113.8', 'user-agent': 'QA' } },
+      supabaseUrl: 'https://example.supabase.co',
+      serviceKey: 'segredo-de-teste',
+      scope: 'interest-corporate',
+      fetchImpl: async () => { throw new Error('fetch failed'); }
+    });
+    assert.deepEqual(result, { allowed: true, degraded: true });
+  } finally {
+    console.error = originalError;
+  }
 });

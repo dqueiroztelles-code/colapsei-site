@@ -2459,10 +2459,11 @@ document.querySelectorAll('.lead-form').forEach(form=>form.addEventListener('sub
       })
     });
     const result=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(result.error||'Não foi possível enviar agora.');
+    if(!response.ok||result.saved!==true)throw new Error(result.error||'Não foi possível enviar agora.');
     form.reset();
-    status.textContent=type==='event'?'Pronto. Você entrou na lista prioritária e receberá uma confirmação por e-mail.':'Pronto. Recebemos seu interesse e enviamos uma confirmação por e-mail.';
+    status.textContent=type==='event'?'Pronto. Você entrou na lista prioritária.':'Pronto. Recebemos seu interesse. O Colapsei. E Agora? continuará o contato pelos dados informados.';
     trackEvent('lead_submit',{type,source:type});
+    if(!result.email_sent)trackEvent('lead_email_pending',{type,source:type});
   }catch(error){
     status.className='lead-status error';
     status.textContent=error.message||'Não foi possível enviar agora. Tente novamente ou use o WhatsApp.';

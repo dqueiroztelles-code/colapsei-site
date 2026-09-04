@@ -55,28 +55,35 @@ function visitorEmailHtml({ type, name, siteUrl }) {
   return `<!doctype html><html lang="pt-BR"><body style="margin:0;background:#f7ecd8;color:#17150f"><div style="max-width:620px;margin:auto;padding:44px 24px;font-family:Arial,sans-serif"><div style="font:600 11px Arial,sans-serif;letter-spacing:.14em">COLAPSEI. E AGORA? · ${escapeHtml(copy.title.toUpperCase())}</div><h1 style="font:500 38px/1.05 Georgia,serif;margin:26px 0">${firstName}, recebemos seu contato.</h1><p style="font:16px/1.65 Arial,sans-serif;color:#4b453f">${escapeHtml(body)}</p><p style="margin:30px 0"><a href="${escapeHtml(siteUrl)}" style="display:inline-block;background:#7dd628;color:#17150f;text-decoration:none;padding:14px 20px;border-radius:999px;font-weight:700">Voltar ao site →</a></p><p style="margin-top:40px;font:11px/1.55 Arial,sans-serif;color:#6b645a">Este canal não substitui atendimento clínico ou de emergência.</p></div></body></html>`;
 }
 
-async function sendEmail({ apiKey, from, to, subject, html, replyTo, idempotencyKey }) {
+async function sendEmail({ apiKey, from, to, subject, html, replyTo, idempotencyKey, fetchImpl = fetch }) {
   if (!apiKey || !from || !to) return false;
   const body = { from, to: [to], subject, html };
   if (replyTo) body.reply_to = replyTo;
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'Idempotency-Key': idempotencyKey
-    },
-    body: JSON.stringify(body)
-  });
-  if (!response.ok) console.error('interest_email_error', response.status);
-  return response.ok;
+  try {
+    const response = await fetchImpl('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'Idempotency-Key': idempotencyKey
+      },
+      body: JSON.stringify(body)
+    });
+    if (!response.ok) console.error('interest_email_error', response.status);
+    return response.ok;
+  } catch (error) {
+    console.error('interest_email_fetch_error', error?.message || error);
+    return false;
+  }
 }
 
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método não permitido.' });
 
+  let stage = 'request';
   try {
+    stage = 'validation';
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : (req.body || {});
     if (body.website) return res.status(200).json({ saved: true, email_sent: false, owner_notified: false });
 
@@ -102,6 +109,7 @@ module.exports = async function handler(req, res) {
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!supabaseUrl || !serviceKey) return res.status(503).json({ error: 'Captação ainda não configurada neste ambiente.' });
 
+    stage = 'rate_limit';
     const rateLimit = await enforceRateLimit({ req, supabaseUrl, serviceKey, scope: `interest-${type}` });
     if (!rateLimit.allowed) return res.status(429).json({ error: 'Recebemos várias tentativas. Aguarde um pouco e tente novamente.' });
 
@@ -120,6 +128,7 @@ module.exports = async function handler(req, res) {
       contactPayload.marketing_consent = true;
       contactPayload.marketing_consented_at = now;
     }
+    stage = 'contact_save';
     const contactResponse = await fetch(`${supabaseUrl}/rest/v1/contacts?on_conflict=email`, {
       method: 'POST',
       headers: { ...dbHeaders, Prefer: 'resolution=merge-duplicates,return=representation' },
@@ -129,6 +138,7 @@ module.exports = async function handler(req, res) {
     const contactId = (await contactResponse.json())[0]?.id;
     if (!contactId) throw new Error('Contato não retornou ID.');
 
+    stage = 'lead_save';
     const leadResponse = await fetch(`${supabaseUrl}/rest/v1/interest_leads`, {
       method: 'POST',
       headers: { ...dbHeaders, Prefer: 'return=representation' },
@@ -147,12 +157,14 @@ module.exports = async function handler(req, res) {
     });
     if (!leadResponse.ok) throw new Error(`Falha ao salvar interesse (${leadResponse.status}).`);
     const leadId = (await leadResponse.json())[0]?.id;
+    if (!leadId) throw new Error('Interesse não retornou ID.');
     const copy = labels(type);
     const resendKey = process.env.RESEND_API_KEY;
     const from = process.env.MAPA_FROM_EMAIL;
     const notifyEmail = process.env.MAPA_NOTIFY_EMAIL || process.env.LEAD_NOTIFY_EMAIL || process.env.MAPA_REPLY_TO;
     const siteUrl = process.env.SITE_URL || 'https://colapseieagora.com.br';
 
+    stage = 'email_delivery';
     const [emailSent, ownerNotified] = await Promise.all([
       sendEmail({
         apiKey: resendKey,
@@ -174,25 +186,28 @@ module.exports = async function handler(req, res) {
       })
     ]);
 
-    if (leadId) {
+    stage = 'delivery_status';
+    try {
       const updateResponse = await fetch(`${supabaseUrl}/rest/v1/interest_leads?id=eq.${encodeURIComponent(leadId)}`, {
-        method: 'PATCH',
-        headers: { ...dbHeaders, Prefer: 'return=minimal' },
-        body: JSON.stringify({
-          email_status: emailSent ? 'sent' : (resendKey && from ? 'failed' : 'pending'),
-          email_sent_at: emailSent ? new Date().toISOString() : null,
-          owner_notification_status: ownerNotified ? 'sent' : (notifyEmail ? 'failed' : 'disabled'),
-          owner_notified_at: ownerNotified ? new Date().toISOString() : null
-        })
-      });
+          method: 'PATCH',
+          headers: { ...dbHeaders, Prefer: 'return=minimal' },
+          body: JSON.stringify({
+            email_status: emailSent ? 'sent' : (resendKey && from ? 'failed' : 'pending'),
+            email_sent_at: emailSent ? new Date().toISOString() : null,
+            owner_notification_status: ownerNotified ? 'sent' : (notifyEmail ? 'failed' : 'disabled'),
+            owner_notified_at: ownerNotified ? new Date().toISOString() : null
+          })
+        });
       if (!updateResponse.ok) console.error('interest_status_update_error', updateResponse.status);
+    } catch (error) {
+      console.error('interest_status_update_fetch_error', error?.message || error);
     }
 
     return res.status(200).json({ saved: true, email_sent: emailSent, owner_notified: ownerNotified });
   } catch (error) {
-    console.error('interest_submit_error', error?.message || error);
+    console.error('interest_submit_error', stage, error?.message || error);
     return res.status(500).json({ error: 'Não foi possível registrar seu interesse agora.' });
   }
 };
 
-module.exports._test = { clean, validEmail, normalizePhone, labels, ownerEmailHtml };
+module.exports._test = { clean, validEmail, normalizePhone, labels, ownerEmailHtml, sendEmail };
