@@ -1,3 +1,4 @@
+const crypto = require('node:crypto');
 const { enforceRateLimit } = require('../lib/lead-guard');
 
 const TYPES = new Set(['event', 'corporate']);
@@ -107,62 +108,82 @@ module.exports = async function handler(req, res) {
 
     const supabaseUrl = process.env.SUPABASE_URL;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!supabaseUrl || !serviceKey) return res.status(503).json({ error: 'Captação ainda não configurada neste ambiente.' });
-
-    stage = 'rate_limit';
-    const rateLimit = await enforceRateLimit({ req, supabaseUrl, serviceKey, scope: `interest-${type}` });
-    if (!rateLimit.allowed) return res.status(429).json({ error: 'Recebemos várias tentativas. Aguarde um pouco e tente novamente.' });
-
-    const dbHeaders = { 'Content-Type': 'application/json', apikey: serviceKey, Authorization: `Bearer ${serviceKey}` };
-    const now = new Date().toISOString();
-    const contactPayload = {
-      name,
-      email,
-      phone,
-      privacy_ack_at: now,
-      whatsapp_contact_consent: true,
-      whatsapp_consented_at: now,
-      updated_at: now
-    };
-    if (type === 'event') {
-      contactPayload.marketing_consent = true;
-      contactPayload.marketing_consented_at = now;
+    const databaseConfigured = Boolean(supabaseUrl && serviceKey);
+    if (databaseConfigured) {
+      stage = 'rate_limit';
+      const rateLimit = await enforceRateLimit({ req, supabaseUrl, serviceKey, scope: `interest-${type}` });
+      if (!rateLimit.allowed) return res.status(429).json({ error: 'Recebemos várias tentativas. Aguarde um pouco e tente novamente.' });
+    } else {
+      console.error('interest_database_not_configured');
     }
-    stage = 'contact_save';
-    const contactResponse = await fetch(`${supabaseUrl}/rest/v1/contacts?on_conflict=email`, {
-      method: 'POST',
-      headers: { ...dbHeaders, Prefer: 'resolution=merge-duplicates,return=representation' },
-      body: JSON.stringify(contactPayload)
-    });
-    if (!contactResponse.ok) throw new Error(`Falha ao salvar contato (${contactResponse.status}).`);
-    const contactId = (await contactResponse.json())[0]?.id;
-    if (!contactId) throw new Error('Contato não retornou ID.');
 
-    stage = 'lead_save';
-    const leadResponse = await fetch(`${supabaseUrl}/rest/v1/interest_leads`, {
-      method: 'POST',
-      headers: { ...dbHeaders, Prefer: 'return=representation' },
-      body: JSON.stringify({
-        contact_id: contactId,
-        interest_type: type,
-        company: company || null,
-        interest: [interest, context ? `Contexto: ${context}` : ''].filter(Boolean).join('\n\n') || null,
-        source: clean(body.source, 100),
-        page_url: clean(body.page_url, MAX.url),
-        utm_source: clean(body.utm_source, 160),
-        utm_medium: clean(body.utm_medium, 160),
-        utm_campaign: clean(body.utm_campaign, 160),
-        privacy_version: clean(body.privacy_version, 80) || 'site-2026-08-27'
-      })
-    });
-    if (!leadResponse.ok) throw new Error(`Falha ao salvar interesse (${leadResponse.status}).`);
-    const leadId = (await leadResponse.json())[0]?.id;
-    if (!leadId) throw new Error('Interesse não retornou ID.');
+    const now = new Date().toISOString();
+    const dbHeaders = databaseConfigured
+      ? { 'Content-Type': 'application/json', apikey: serviceKey, Authorization: `Bearer ${serviceKey}` }
+      : null;
+    let leadId = null;
+    let databaseSaved = false;
+    if (databaseConfigured) {
+      let persistenceStage = 'contact_save';
+      try {
+        const contactPayload = {
+          name,
+          email,
+          phone,
+          privacy_ack_at: now,
+          whatsapp_contact_consent: true,
+          whatsapp_consented_at: now,
+          updated_at: now
+        };
+        if (type === 'event') {
+          contactPayload.marketing_consent = true;
+          contactPayload.marketing_consented_at = now;
+        }
+        const contactResponse = await fetch(`${supabaseUrl}/rest/v1/contacts?on_conflict=email`, {
+          method: 'POST',
+          headers: { ...dbHeaders, Prefer: 'resolution=merge-duplicates,return=representation' },
+          body: JSON.stringify(contactPayload)
+        });
+        if (!contactResponse.ok) throw new Error(`Falha ao salvar contato (${contactResponse.status}).`);
+        const contactId = (await contactResponse.json())[0]?.id;
+        if (!contactId) throw new Error('Contato não retornou ID.');
+
+        persistenceStage = 'lead_save';
+        const leadResponse = await fetch(`${supabaseUrl}/rest/v1/interest_leads`, {
+          method: 'POST',
+          headers: { ...dbHeaders, Prefer: 'return=representation' },
+          body: JSON.stringify({
+            contact_id: contactId,
+            interest_type: type,
+            company: company || null,
+            interest: [interest, context ? `Contexto: ${context}` : ''].filter(Boolean).join('\n\n') || null,
+            source: clean(body.source, 100),
+            page_url: clean(body.page_url, MAX.url),
+            utm_source: clean(body.utm_source, 160),
+            utm_medium: clean(body.utm_medium, 160),
+            utm_campaign: clean(body.utm_campaign, 160),
+            privacy_version: clean(body.privacy_version, 80) || 'site-2026-08-27'
+          })
+        });
+        if (!leadResponse.ok) throw new Error(`Falha ao salvar interesse (${leadResponse.status}).`);
+        leadId = (await leadResponse.json())[0]?.id;
+        if (!leadId) throw new Error('Interesse não retornou ID.');
+        databaseSaved = true;
+      } catch (error) {
+        console.error('interest_persistence_error', persistenceStage, error?.message || error);
+      }
+    }
+
     const copy = labels(type);
     const resendKey = process.env.RESEND_API_KEY;
     const from = process.env.MAPA_FROM_EMAIL;
     const notifyEmail = process.env.MAPA_NOTIFY_EMAIL || process.env.LEAD_NOTIFY_EMAIL || process.env.MAPA_REPLY_TO;
     const siteUrl = process.env.SITE_URL || 'https://colapseieagora.com.br';
+    const submissionKey = leadId || crypto
+      .createHash('sha256')
+      .update(`${type}|${email}|${now.slice(0, 13)}`)
+      .digest('hex')
+      .slice(0, 32);
 
     stage = 'email_delivery';
     const [emailSent, ownerNotified] = await Promise.all([
@@ -173,7 +194,7 @@ module.exports = async function handler(req, res) {
         subject: copy.visitorSubject,
         html: visitorEmailHtml({ type, name, siteUrl }),
         replyTo: process.env.MAPA_REPLY_TO,
-        idempotencyKey: `interest-visitor-${leadId || email}`
+        idempotencyKey: `interest-visitor-${submissionKey}`
       }),
       sendEmail({
         apiKey: resendKey,
@@ -182,13 +203,14 @@ module.exports = async function handler(req, res) {
         subject: `${copy.ownerSubject}: ${name}`,
         html: ownerEmailHtml({ type, name, email, phone, company, interest, context, createdAt: now }),
         replyTo: email,
-        idempotencyKey: `interest-owner-${leadId || email}`
+        idempotencyKey: `interest-owner-${submissionKey}`
       })
     ]);
 
-    stage = 'delivery_status';
-    try {
-      const updateResponse = await fetch(`${supabaseUrl}/rest/v1/interest_leads?id=eq.${encodeURIComponent(leadId)}`, {
+    if (databaseSaved) {
+      stage = 'delivery_status';
+      try {
+        const updateResponse = await fetch(`${supabaseUrl}/rest/v1/interest_leads?id=eq.${encodeURIComponent(leadId)}`, {
           method: 'PATCH',
           headers: { ...dbHeaders, Prefer: 'return=minimal' },
           body: JSON.stringify({
@@ -198,12 +220,25 @@ module.exports = async function handler(req, res) {
             owner_notified_at: ownerNotified ? new Date().toISOString() : null
           })
         });
-      if (!updateResponse.ok) console.error('interest_status_update_error', updateResponse.status);
-    } catch (error) {
-      console.error('interest_status_update_fetch_error', error?.message || error);
+        if (!updateResponse.ok) console.error('interest_status_update_error', updateResponse.status);
+      } catch (error) {
+        console.error('interest_status_update_fetch_error', error?.message || error);
+      }
     }
 
-    return res.status(200).json({ saved: true, email_sent: emailSent, owner_notified: ownerNotified });
+    const accepted = databaseSaved || ownerNotified;
+    if (!accepted) {
+      console.error('interest_capture_unavailable', { databaseSaved, ownerNotified });
+      return res.status(503).json({ error: 'Não foi possível encaminhar seu interesse agora. Tente novamente ou fale conosco pelo WhatsApp.' });
+    }
+    if (!databaseSaved && ownerNotified) console.error('interest_email_fallback_capture', type);
+    return res.status(200).json({
+      accepted: true,
+      saved: true,
+      database_saved: databaseSaved,
+      email_sent: emailSent,
+      owner_notified: ownerNotified
+    });
   } catch (error) {
     console.error('interest_submit_error', stage, error?.message || error);
     return res.status(500).json({ error: 'Não foi possível registrar seu interesse agora.' });

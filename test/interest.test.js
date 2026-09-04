@@ -1,7 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { _test } = require('../api/interest');
+const interestHandler = require('../api/interest');
+const { _test } = interestHandler;
 const { enforceRateLimit, requestFingerprint } = require('../lib/lead-guard');
 
 test('normaliza WhatsApp e valida e-mail do lead', () => {
@@ -71,5 +72,66 @@ test('falha de rede no rate limit degrada sem bloquear o formulário', async () 
     assert.deepEqual(result, { allowed: true, degraded: true });
   } finally {
     console.error = originalError;
+  }
+});
+
+test('indisponibilidade do banco usa o e-mail interno como contingência', async () => {
+  const originalFetch = global.fetch;
+  const originalError = console.error;
+  const originalEnv = {
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    MAPA_FROM_EMAIL: process.env.MAPA_FROM_EMAIL,
+    MAPA_NOTIFY_EMAIL: process.env.MAPA_NOTIFY_EMAIL
+  };
+  console.error = () => {};
+  process.env.SUPABASE_URL = 'https://database.example.com';
+  process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-key';
+  process.env.RESEND_API_KEY = 'resend-key';
+  process.env.MAPA_FROM_EMAIL = 'site@example.com';
+  process.env.MAPA_NOTIFY_EMAIL = 'contato@example.com';
+  global.fetch = async (url) => {
+    if (String(url).startsWith('https://api.resend.com/')) return { ok: true, status: 200 };
+    throw new Error('fetch failed');
+  };
+
+  const req = {
+    method: 'POST',
+    headers: { 'x-forwarded-for': '203.0.113.9', 'user-agent': 'QA' },
+    body: {
+      type: 'corporate',
+      name: 'Teste de Contingência',
+      email: 'lead@example.com',
+      phone: '(11) 99999-9999',
+      company: 'Empresa QA',
+      interest: 'Palestra',
+      context: 'Teste automatizado.',
+      privacy_ack: true,
+      whatsapp_contact_consent: true
+    }
+  };
+  const res = {
+    statusCode: 200,
+    body: null,
+    setHeader() {},
+    status(code) { this.statusCode = code; return this; },
+    json(body) { this.body = body; return this; }
+  };
+
+  try {
+    await interestHandler(req, res);
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body.accepted, true);
+    assert.equal(res.body.saved, true);
+    assert.equal(res.body.database_saved, false);
+    assert.equal(res.body.owner_notified, true);
+  } finally {
+    global.fetch = originalFetch;
+    console.error = originalError;
+    for (const [key, value] of Object.entries(originalEnv)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
   }
 });
